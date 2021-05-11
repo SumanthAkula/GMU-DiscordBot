@@ -12,7 +12,7 @@ Python Based Discord Bot created by the GMU CS community
 		* any other cogs that you want. these files will have the command and event handlers necessary.  
 	* `util/` (empty right now, but will have helpers and stuff later)
 
-Stuff I'm considering adding:
+## Stuff I'm considering adding:
 * Slash commands
 	* They're apparently not horrible on mobile anymore since there was an update to the mobile app
 * A local SQLite database (unless we're planning on using something different) for storing invite data, banned words, warnings, birthdays, and deleted messages
