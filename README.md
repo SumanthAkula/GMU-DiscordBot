@@ -1,7 +1,7 @@
 # DiscordBot
 Python Based Discord Bot created by the GMU CS community
 
-File structure
+## File structure
 
 * root
 	* `venv/` virtual environment for developing the bot (not essential as long as you have python and dependencies on your computer)
