@@ -14,11 +14,7 @@ for f in os.listdir("./cogs"):
 
 @bot.event
 async def on_ready():
-    print("LETS GOOOOOO!")
+    print("bot started!")
 
-
-@bot.command()
-async def funnynumber(ctx):
-    await ctx.send("69")
 
 bot.run(secret.TOKEN)
