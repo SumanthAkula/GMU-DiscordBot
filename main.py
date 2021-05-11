@@ -10,7 +10,7 @@ activity = discord.Activity(type=discord.ActivityType.listening, name="Suge")
 bot = commands.Bot(command_prefix=".", activity=activity)
 
 # connect to database
-mongoclient = pymongo.MongoClient("mongodb://localhost:27017/")
+mongoclient = pymongo.MongoClient(secret.DB_URL)
 db = mongoclient["botdb"]
 
 for f in os.listdir("./cogs"):
