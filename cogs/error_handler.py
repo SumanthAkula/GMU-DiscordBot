@@ -8,13 +8,7 @@ class ErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        try:
-            raise error
-        except commands.CommandError:
-            message = """```python\n"""
-            message += traceback.format_exc()
-            message += "\n```"
-            await ctx.send(message)
+        await ctx.send("There was an error!")
         raise error
 
 
