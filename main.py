@@ -28,5 +28,6 @@ async def on_message(message: discord.Message):
         return
     if message.content.find("ayy") != -1:
         await message.channel.send("lmao")
+    await bot.process_commands(message)
 
 bot.run(secret.TOKEN)
