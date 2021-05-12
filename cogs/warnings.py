@@ -12,8 +12,7 @@ class Warnings(commands.Cog):
 
     @commands.command(name="warn")
     async def __add_warning(self, ctx: commands.Context, member: discord.Member, points: int = 1
-                            , *, reason: str = "They were being "
-                                               "a silly baka"):
+                            , *, reason: str = "They were being a silly baka"):
         guild_collection = main.db[f"GUILD_{ctx.guild.id}"]
         warn_id = str(uuid.uuid1())
         value = {
@@ -54,7 +53,6 @@ class Warnings(commands.Cog):
         warnings = dict(guild_collection.find_one({}))["warnings"]
         warn_count = 0
         for warning in warnings:
-            print(warning)
             if warning["user_id"] == member_id:  # loop through all the warnings and see which ones belong to the user
                 warn_count += 1
         return warn_count
