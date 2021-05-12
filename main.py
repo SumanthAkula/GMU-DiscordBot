@@ -22,4 +22,11 @@ async def on_ready():
     print("bot started!")
 
 
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author == bot.user:
+        return
+    if message.content.find("ayy") != -1:
+        await message.channel.send("lmao")
+
 bot.run(secret.TOKEN)
