@@ -2,6 +2,45 @@ from main import db
 import discord
 from discord.ext import commands
 
+"""
+database structure goes as follows:
+
+ABSTRACTED VERSION:
+{database name}
+    {collection1 name}
+        [
+            guild_id: string
+            {document property 1}: {type}
+            {document property 2}: {type}
+        ]
+
+ACTUAL VERSION: 
+botdb
+    banned_words
+        [
+            guild_id: number
+            word: string
+        ]
+    warnings
+        [
+            guild_id: number
+            member_id: number
+            warning_id: string
+            reason: string
+            time: number
+        ]
+    birthdays
+        [
+            guild_id
+            idfk whatever else a birthday needs ig
+        ]
+    messages
+        [
+            guild_id
+            idfk whatever else a message needs ig
+        ]
+"""
+
 
 class DatabaseManager(commands.Cog):
     def __init__(self, bot):
