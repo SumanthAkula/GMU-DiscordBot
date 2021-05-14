@@ -26,7 +26,6 @@ class SpamDetector(commands.Cog):
             if author == message.author.id:
                 msg_counter += 1
         self.messages_temp.append(message.author.id)
-        print(msg_counter)
         if msg_counter >= 5:
             await message.delete()
             last_warn = await Warnings.get_most_recent_warning(message.guild.id, message.author.id)
