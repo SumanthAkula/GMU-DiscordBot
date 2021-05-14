@@ -46,19 +46,19 @@ class DatabaseManager(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild: discord.Guild):
-        """
-        check if a guild_collection exists for this guild.  if it does, do nothing.
-        otherwise create the guild_collection and create empty fields
-        """
-        if f"GUILD_{guild.id}" in db.list_collection_names():
-            return
-        guild_collection = db[f"GUILD_{guild.id}"]
-        guild_id = {
-            "guild_id": guild.id
-        }
-        guild_collection.insert_one(guild_id)
+    # @commands.Cog.listener()
+    # async def on_guild_join(self, guild: discord.Guild):
+    #     """
+    #     check if a guild_collection exists for this guild.  if it does, do nothing.
+    #     otherwise create the guild_collection and create empty fields
+    #     """
+    #     if f"GUILD_{guild.id}" in db.list_collection_names():
+    #         return
+    #     guild_collection = db[f"GUILD_{guild.id}"]
+    #     guild_id = {
+    #         "guild_id": guild.id
+    #     }
+    #     guild_collection.insert_one(guild_id)
 
     # @commands.command()
     # async def force_collection_creation(self, ctx):
