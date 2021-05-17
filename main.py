@@ -30,4 +30,17 @@ async def on_message(message: discord.Message):
         await message.channel.send("lmao")
     await bot.process_commands(message)
 
+
+# REMOVE THESE ON RELEASE
+@bot.command()
+async def load_cog(ctx: commands.Context, cog: str):
+    bot.load_extension(f"cogs.{cog}")
+    await ctx.send(f"loaded {cog}")
+
+
+@bot.command()
+async def unload_cog(ctx: commands.Context, cog: str):
+    bot.unload_extension(f"cogs.{cog}")
+    await ctx.send(f"unloaded {cog}")
+
 bot.run(secret.TOKEN)
