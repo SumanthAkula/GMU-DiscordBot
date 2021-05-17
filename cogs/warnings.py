@@ -48,6 +48,8 @@ class Warnings(commands.Cog):
     @staticmethod
     async def get_most_recent_warning(guild_id: int, member_id: int):
         warnings = await Warnings.get_warnings_for_user(guild_id, member_id)
+        if len(warnings) == 0:
+            return None
         return warnings[-1]
 
     @staticmethod
