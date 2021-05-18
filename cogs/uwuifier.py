@@ -9,7 +9,6 @@ class Uwuifier(commands.Cog):
     @commands.command()
     async def uwu(self, ctx: commands.Context, *, msg):
         await ctx.send(uwuify.uwu(msg))
-        await ctx.message.delete()
 
 
 def setup(bot):
