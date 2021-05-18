@@ -32,6 +32,7 @@ class Warnings(commands.Cog):
         self.bot = bot
 
     @commands.command(name="warn")
+    @commands.guild_only()
     async def __add_warning_cmd(self, ctx: commands.Context, member: discord.Member, points: int,
                                 *, reason: str = "They were being a silly baka"):
         if points <= 0:
@@ -46,6 +47,7 @@ class Warnings(commands.Cog):
                         f"Fuck up one more time and I send the secret girls to break your knee caps")
 
     @commands.command(name="removewarning", aliases=["unwarn", "rmw"])
+    @commands.guild_only()
     async def __remove_warning(self, ctx: commands.Context, warn_id: str):
         result: pymongo.results.DeleteResult = main.db.warnings.delete_one(
             {
@@ -57,6 +59,7 @@ class Warnings(commands.Cog):
                                                                                                "that ID exists!")
 
     @commands.command(name="warncount", aliases=["wc"])
+    @commands.guild_only()
     async def __get_warning_count(self, ctx: commands.Context, member: discord.Member):
         warnings = await self.get_warnings_for_user(ctx.guild.id, member.id)
         warn_count = len(warnings)
