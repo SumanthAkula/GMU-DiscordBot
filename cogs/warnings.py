@@ -6,6 +6,7 @@ import pymongo.results
 from discord.ext import commands
 
 import main
+from cogs.punisher import Punisher
 
 
 class Warnings(commands.Cog):
@@ -82,8 +83,7 @@ class Warnings(commands.Cog):
             return None
         return warnings[-1]
 
-    @staticmethod
-    async def add_warning(guild_id, member_id, points: int, reason: str) -> str:
+    async def add_warning(self, guild_id, member_id, points: int, reason: str) -> str:
         warning_id = str(uuid.uuid1())
         main.db.warnings.insert_one(
             {
@@ -95,6 +95,10 @@ class Warnings(commands.Cog):
                 "time": time.time()
             }
         )
+        warnings = await Warnings.get_warnings_for_user(guild_id, member_id)
+        guild: discord.Guild = await self.bot.fetch_guild(guild_id)
+        member: discord.Member = await guild.fetch_member(member_id)
+        await Punisher.assign_punishment(guild, member, warnings)
         return warning_id
 
 
