@@ -1,26 +1,90 @@
 import time
+from enum import Enum
 
 import discord
 from discord.ext import commands, tasks
+from discord.utils import get
 
 import main
+
+
+class Punishment(Enum):
+    MUTE = 0,
+    BAN = 1
 
 
 class Punisher(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.check_for_expired_bans.start()
+        self.check_for_expired_punishments.start()
+
+    @staticmethod
+    async def assign_punishment(guild: discord.Guild, member: discord.Member, warnings: list):
+        reasons = ""
+        points = 0
+        for i, warning in enumerate(warnings, start=1):
+            reasons += f"{i}) {warning['reason']}\n"
+            points += warning["points"]
+        if points >= 10:  # permanent ban
+            print("permanent ban!")
+            await Punisher.ban_member(guild, member, -1, reasons)
+        elif points >= 6:  # 3 day temporary ban
+            print("3 day ban!")
+            await Punisher.ban_member(guild, member, 3, reasons)
+        elif points >= 4:  # 1 day temporary ban
+            print("1 day ban!")
+            await Punisher.ban_member(guild, member, 1, reasons)
+        elif points >= 2:  # 1 hour temporary mute
+            print("1 hour mute!")
+            await Punisher.mute_member(guild, member, 1, reasons)
+
+    @staticmethod
+    async def __add_punishment_to_db(guild_id: int, member_id: int, punishment_type: Punishment,
+                                     length: int, reason: str):
+        main.db.punishments.insert_one(
+            {
+                "guild_id": guild_id,
+                "user_id": member_id,
+                "type": punishment_type.value,
+                "reason": reason,
+                "length": length,
+                "time": time.time()
+            }
+        )
+
+    @tasks.loop(seconds=10)
+    async def check_for_expired_punishments(self):
+        now = time.time()
+        punishments = main.db.punishments.find(
+            {
+                "type": Punishment.BAN.value,
+                "length": {
+                    "$gte": 1
+                }
+            }
+        )
+        punishments = list(punishments)
+        if not punishments:
+            return
+        for punishment in punishments:
+            if punishment["type"] == Punishment.BAN.value:
+                if now - punishment["time"] >= punishment["length"] * 60:
+                    await self.revoke_temp_ban(punishment)
+            elif punishment["type"] == Punishment.MUTE.value:
+                if now - punishment["time"] >= punishment["length"] * 60:
+                    await self.revoke_temp_mute(punishment)
 
     # BANNING USERS
     @commands.command(name="ban")
+    @commands.guild_only()
     async def __ban_member_cmd(self, ctx: commands.Context, member: discord.Member, length: int, *, reason: str):
         if ctx.author == member:
             await ctx.reply("you can't ban yourself using this command")
             return
-        await self.__ban_member(ctx.guild, member, length, reason=reason)
+        await self.ban_member(ctx.guild, member, length, reason=reason)
 
     @staticmethod
-    async def __ban_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
+    async def ban_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
         lenstr = f"for {length} day(s)" if length >= 0 else "indefinitely"
         await member.send(f"You have been banned {lenstr} from the {guild.name} Discord server for the "
                           f"following reason(s):\n{reason}")
@@ -28,51 +92,51 @@ class Punisher(commands.Cog):
 
         if length <= 0:
             return  # The member was permanently banned, we dont need to add the ban to the database
-        await Punisher.__add_ban_to_db(guild.id, member.id, length, reason=reason)
-
-    @staticmethod
-    async def __add_ban_to_db(guild_id: int, member_id: int, length: int, reason: str):
-        main.db.bans.insert_one(
-            {
-                "guild_id": guild_id,
-                "user_id": member_id,
-                "reason": reason,
-                "length": length,
-                "time": time.time()
-            }
-        )
+        await Punisher.__add_punishment_to_db(guild.id, member.id, Punishment.BAN, length, reason)
 
     # UNBANNING USERS
-    @tasks.loop(seconds=10)
-    async def check_for_expired_bans(self):
-        now = time.time()
-        bans = main.db.bans.find(
-            {
-                "length": {
-                    "$gte": 1
-                }
-            }
-        )
-        bans = list(bans)
-        if not bans:
-            return
-        for ban in bans:
-            if now - ban["time"] >= ban["length"] * 60:
-                print(f"unbanning user {ban['user_id']}")
-                guild: discord.Guild = await self.bot.fetch_guild(ban["guild_id"])
-                user: discord.User = await self.bot.fetch_user(ban["user_id"])
-                await guild.unban(user, reason="[AUTO] temporary ban timer expired")
-                await user.send(f"Your temporary ban from the {guild.name} Discord server is over! You are free to "
-                                f"join the server again.")
-
     @commands.Cog.listener()
     async def on_member_unban(self, guild: discord.Guild, user: discord.User):
-        main.db.bans.delete_one(
+        main.db.punishments.delete_one(
             {
                 "guild_id": guild.id,
-                "user_id": user.id
+                "user_id": user.id,
+                "type": Punishment.BAN.value
             }
         )
+
+    async def revoke_temp_ban(self, ban: dict):
+        guild: discord.Guild = await self.bot.fetch_guild(ban["guild_id"])
+        user: discord.User = await self.bot.fetch_user(ban["user_id"])
+        await guild.unban(user, reason="[AUTO] temporary ban timer expired")
+        await user.send(f"Your temporary ban from the {guild.name} Discord server is over! You are free to "
+                        f"join the server again.")
+
+    # MUTING MEMBERS
+    @staticmethod
+    async def mute_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
+        lenstr = f"for {length} hour(s)" if length >= 0 else "indefinitely"
+        role = get(guild.roles, name="muted")
+        await member.add_roles(role, reason=f"[AUTO] {reason}")
+        await Punisher.__add_punishment_to_db(guild.id, member.id, Punishment.MUTE.value, length, reason)
+        await member.send(f"You have been muted {lenstr} in the {guild.name} Discord server for the following reason(s)"
+                          f"\n{reason}")
+
+    async def revoke_temp_mute(self, punishment: dict):
+        guild: discord.Guild = await self.bot.fetch_guild(punishment["guild_id"])
+        member: discord.Member = await guild.fetch_member(punishment["user_id"])
+        role = get(guild.roles, name="muted")
+        await member.remove_roles(role, "[AUTO] temporary mute expired")
+        main.db.punishments.delete_one(
+            {
+                "guild_id": guild.id,
+                "user_id": member.id,
+                "type": Punishment.MUTE.value
+            }
+        )
+
+        await member.send(f"Your temporary mute from the {guild.name} Discord server is over! You are free speak in the"
+                          f" server again.")
 
 
 def setup(bot):
