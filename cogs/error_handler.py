@@ -1,4 +1,3 @@
-import traceback
 from discord.ext import commands
 
 
@@ -8,7 +7,7 @@ class ErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send("There was an error!")
+        await ctx.send(str(error))
         raise error
 
 
