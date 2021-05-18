@@ -78,6 +78,16 @@ class Punisher(commands.Cog):
     @commands.command(name="ban")
     @commands.guild_only()
     async def __ban_member_cmd(self, ctx: commands.Context, member: discord.Member, length: int, *, reason: str):
+        """
+        Bans a member for a specified amount of time (or indefinitely if you want).  The member will be automatically
+        removed from the ban list after the specified amount of time has passed.
+
+        Arguments:
+            member: the member you want to ban (@ them)
+            length: the length of the ban in days. Put a 0 or a negative number here to make it a permanent ban
+            reason: the reason for the ban.  This will show up in the audit logs and will be sent to the member that is
+            being banned via DM
+        """
         if ctx.author == member:
             await ctx.reply("you can't ban yourself using this command")
             return
