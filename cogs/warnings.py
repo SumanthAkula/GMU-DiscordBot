@@ -11,21 +11,7 @@ from cogs.punisher import Punisher
 
 class Warnings(commands.Cog):
     """
-    How the Warnings commands work:
-        warn:
-            adds a warning to whatever user is passed in.  whoever runs the command must also pass in the amount of
-            points the warning is worth.  If no reason is given, a default reason is given.  the bot will add the
-            warning to the database and each warning will record the guild the warning was issued in, the user the
-            warning is for, the points, the reason, a warning ID, and the time that the warning was given at in epoch.
-            The warning ID is a randomly generated UUID string that is used to identify any individual warning so it can
-            be removed or referenced later.
-        removewarning:
-            removes a warning from the database.  whoever runs this command must also pass in the warning ID of the
-            warning they want to remove.  the bot will query the warnings collection in the database and delete it.
-        warncount:
-            the bot will send the number of warning points and warnings a member has for that guild.  whoever runs
-            this command must also pass in the member they want to see the warning count for, even if that member
-            is themselves.
+    Commands for giving and removing warnings to/from members.
     """
 
     def __init__(self, bot):
@@ -35,6 +21,16 @@ class Warnings(commands.Cog):
     @commands.guild_only()
     async def __add_warning_cmd(self, ctx: commands.Context, member: discord.Member, points: int,
                                 *, reason: str = "They were being a silly baka"):
+        """
+        Gives a member in the server a warning.  If enough warnings are given, a punishment will be automatically
+        enforced on the member.  The bot will generate a random ID that can be used to remove the warning later.
+
+        Arguments:
+            member: the member you want to warn
+            points: the number of points the warning is worth
+            reason (optional): the reason for the warning. if no reason is given, the default one is "They were being a
+            silly baka"
+        """
         if points <= 0:
             await ctx.reply("The number of points has to be greater than or equal to 1!")
             return
@@ -48,11 +44,17 @@ class Warnings(commands.Cog):
 
     @commands.command(name="removewarning", aliases=["unwarn", "rmw"])
     @commands.guild_only()
-    async def __remove_warning(self, ctx: commands.Context, warn_id: str):
+    async def __remove_warning(self, ctx: commands.Context, warning_id: str):
+        """
+        Removes a warning from the member that is passed in.
+
+        Arguments:
+            warning_id: the ID of the warning you are trying to remove
+        """
         result: pymongo.results.DeleteResult = main.db.warnings.delete_one(
             {
                 "guild_id": ctx.guild.id,
-                "warning_id": f"{warn_id}"
+                "warning_id": f"{warning_id}"
             }
         )
         await ctx.reply(":white_check_mark: Warning removed" if result.deleted_count != 0 else ":x: No warning with "
@@ -61,6 +63,12 @@ class Warnings(commands.Cog):
     @commands.command(name="warncount", aliases=["wc"])
     @commands.guild_only()
     async def __get_warning_count(self, ctx: commands.Context, member: discord.Member):
+        """
+        Prints out how many warnings a member has and how many total warning points they have.
+
+        Arguments:
+            member: the member you want to check the warning count for
+        """
         warnings = await self.get_warnings_for_user(ctx.guild.id, member.id)
         warn_count = len(warnings)
         warn_points = 0
