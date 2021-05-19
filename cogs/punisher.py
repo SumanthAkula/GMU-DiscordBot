@@ -9,7 +9,7 @@ import main
 
 
 class Punishment(Enum):
-    MUTE = 0,
+    MUTE = 0
     BAN = 1
 
 
@@ -26,16 +26,12 @@ class Punisher(commands.Cog):
             reasons += f"{i}) {warning['reason']}\n"
             points += warning["points"]
         if points >= 10:  # permanent ban
-            print("permanent ban!")
             await Punisher.ban_member(guild, member, -1, reasons)
         elif points >= 6:  # 3 day temporary ban
-            print("3 day ban!")
             await Punisher.ban_member(guild, member, 3, reasons)
         elif points >= 4:  # 1 day temporary ban
-            print("1 day ban!")
             await Punisher.ban_member(guild, member, 1, reasons)
         elif points >= 2:  # 1 hour temporary mute
-            print("1 hour mute!")
             await Punisher.mute_member(guild, member, 1, reasons)
 
     @staticmethod
@@ -57,7 +53,6 @@ class Punisher(commands.Cog):
         now = time.time()
         punishments = main.db.punishments.find(
             {
-                "type": Punishment.BAN.value,
                 "length": {
                     "$gte": 1
                 }
@@ -91,7 +86,7 @@ class Punisher(commands.Cog):
         if ctx.author == member:
             await ctx.reply("you can't ban yourself using this command")
             return
-        await self.ban_member(ctx.guild, member, length, reason=reason)
+        await self.ban_member(ctx.guild, member, length, reason)
 
     @staticmethod
     async def ban_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
@@ -127,8 +122,8 @@ class Punisher(commands.Cog):
     async def mute_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
         lenstr = f"for {length} hour(s)" if length >= 0 else "indefinitely"
         role = get(guild.roles, name="muted")
-        await member.add_roles(role, reason=f"[AUTO] {reason}")
-        await Punisher.__add_punishment_to_db(guild.id, member.id, Punishment.MUTE.value, length, reason)
+        await member.add_roles(role, reason=f"{reason}")
+        await Punisher.__add_punishment_to_db(guild.id, member.id, Punishment.MUTE, length, reason)
         await member.send(f"You have been muted {lenstr} in the {guild.name} Discord server for the following reason(s)"
                           f"\n{reason}")
 
@@ -136,7 +131,7 @@ class Punisher(commands.Cog):
         guild: discord.Guild = await self.bot.fetch_guild(punishment["guild_id"])
         member: discord.Member = await guild.fetch_member(punishment["user_id"])
         role = get(guild.roles, name="muted")
-        await member.remove_roles(role, "[AUTO] temporary mute expired")
+        await member.remove_roles(role, reason="[AUTO] temporary mute expired")
         main.db.punishments.delete_one(
             {
                 "guild_id": guild.id,
