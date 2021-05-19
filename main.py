@@ -6,8 +6,10 @@ import pymongo
 
 import secret  # super duper secret .py file used to store the bot token
 
+intents = discord.Intents.default()
+intents.members = True
 activity = discord.Activity(type=discord.ActivityType.listening, name="Suge")
-bot = commands.Bot(command_prefix=">", activity=activity)
+bot = commands.Bot(command_prefix=">", intents=intents, activity=activity)
 
 # connect to database
 db = pymongo.MongoClient(secret.DB_URL)["botdb"]
