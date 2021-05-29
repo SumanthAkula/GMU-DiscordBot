@@ -51,4 +51,6 @@ async def unload_cog(ctx: commands.Context, cog: str):
     bot.unload_extension(f"cogs.{cog}")
     await ctx.send(f"unloaded {cog}")
 
-bot.run(secret.TOKEN)
+
+if __name__ == "__main__":
+    bot.run(secret.TOKEN)
