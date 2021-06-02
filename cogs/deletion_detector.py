@@ -1,5 +1,4 @@
 import base64
-import mimetypes
 import os
 import time
 from pathlib import Path
@@ -48,7 +47,7 @@ class DeletionDetector(commands.Cog):
                     with open(f"{DELETED_ATTACHMENTS_PATH}{file_name}", "wb") as fp:
                         fp.write(base64.decodebytes(a["base64"]))
                     await ctx.send(file=discord.File(DELETED_ATTACHMENTS_PATH + file_name))
-                    # os.remove(DELETED_ATTACHMENTS_PATH + file_name)
+                    os.remove(DELETED_ATTACHMENTS_PATH + file_name)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
