@@ -4,3 +4,4 @@ secret.py
 .idea/
 venv/
 test.py
+tmp/deleted_attachments/*
