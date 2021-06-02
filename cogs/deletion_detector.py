@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 
 import main
 
+# constant path for the temporary files needed for recreating the attachments
 DELETED_ATTACHMENTS_PATH = path = "tmp/deleted_attachments/"
 
 
@@ -16,7 +17,7 @@ class DeletionDetector(commands.Cog):
         self.bot = bot
         self.cache = []
         self.clear_cache.start()
-        Path(DELETED_ATTACHMENTS_PATH).mkdir(parents=True, exist_ok=True)
+        Path(DELETED_ATTACHMENTS_PATH).mkdir(parents=True, exist_ok=True)  # create folders for the temp files
 
     @tasks.loop(seconds=30)
     async def clear_cache(self):
@@ -41,18 +42,22 @@ class DeletionDetector(commands.Cog):
         for message in messages:
             if message["content"]:
                 await ctx.send(message["content"])
-            if message["attachments"]:
-                for a in message["attachments"]:
+            if message["attachments"]:  # check if the message has attachments
+                for a in message["attachments"]:  # if so, load each one and send to discord
                     file_name = f"G{ctx.guild.id}_{a['filename']}"
-                    with open(f"{DELETED_ATTACHMENTS_PATH}{file_name}", "wb") as fp:
+                    with open(f"{DELETED_ATTACHMENTS_PATH}{file_name}", "wb") as fp:  # create a temporary file
+                        # decode the base64 string and write it back to the file
                         fp.write(base64.decodebytes(a["base64"]))
                     await ctx.send(file=discord.File(DELETED_ATTACHMENTS_PATH + file_name))
-                    os.remove(DELETED_ATTACHMENTS_PATH + file_name)
+                    os.remove(DELETED_ATTACHMENTS_PATH + file_name)  # delete the temp file after sending it to discord
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         attachments = []
         for a in message.attachments:
+            """
+            encode attachments as base64 strings to store them in the database easily
+            """
             file = await a.to_file()
             file = file.fp
             b64 = base64.b64encode(file.read())
