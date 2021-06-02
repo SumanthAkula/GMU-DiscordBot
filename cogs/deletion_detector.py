@@ -1,11 +1,15 @@
 import base64
 import mimetypes
+import os
 import time
+from pathlib import Path
 
 import discord
 from discord.ext import commands, tasks
 
 import main
+
+DELETED_ATTACHMENTS_PATH = path = "tmp/deleted_attachments/"
 
 
 class DeletionDetector(commands.Cog):
@@ -13,6 +17,7 @@ class DeletionDetector(commands.Cog):
         self.bot = bot
         self.cache = []
         self.clear_cache.start()
+        Path(DELETED_ATTACHMENTS_PATH).mkdir(parents=True, exist_ok=True)
 
     @tasks.loop(seconds=30)
     async def clear_cache(self):
@@ -39,11 +44,11 @@ class DeletionDetector(commands.Cog):
                 await ctx.send(message["content"])
             if message["attachments"]:
                 for a in message["attachments"]:
-                    file_name = f"G{ctx.guild.id}_{a['attachment_id']}{mimetypes.guess_extension(a['type'])}"
-                    path = "tmp\\deleted_attachments\\"
-                    with open(f"{path}{file_name}", "wb") as fp:
+                    file_name = f"G{ctx.guild.id}_{a['filename']}"
+                    with open(f"{DELETED_ATTACHMENTS_PATH}{file_name}", "wb") as fp:
                         fp.write(base64.decodebytes(a["base64"]))
-                    await ctx.send(file=discord.File(path + file_name))
+                    await ctx.send(file=discord.File(DELETED_ATTACHMENTS_PATH + file_name))
+                    # os.remove(DELETED_ATTACHMENTS_PATH + file_name)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
