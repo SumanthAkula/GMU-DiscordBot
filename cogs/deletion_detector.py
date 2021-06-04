@@ -1,6 +1,7 @@
 import base64
 import os
 import time
+import uuid
 from pathlib import Path
 
 import discord
@@ -17,11 +18,26 @@ class DeletionDetector(commands.Cog):
         self.bot = bot
         self.cache = []
         self.clear_cache.start()
+        self.clear_old_deletes.start()
         Path(DELETED_ATTACHMENTS_PATH).mkdir(parents=True, exist_ok=True)  # create folders for the temp files
 
     @tasks.loop(seconds=30)
     async def clear_cache(self):
         self.cache = []
+
+    @tasks.loop(minutes=1)
+    async def clear_old_deletes(self):
+        """
+        deletes deleted messages from the database if they were deleted 14 or more days ago.
+        """
+        threshold = time.time() - 604800 * 2
+        main.db.deleted_messages.delete_many(
+            {
+                "time_deleted": {
+                    "$lte": threshold
+                }
+            }
+        )
 
     @commands.command(name="snipe")
     async def __snipe_cmd(self, ctx: commands.Context):
@@ -39,6 +55,8 @@ class DeletionDetector(commands.Cog):
             }, limit=amount
         ).sort("time_sent", -1)
         messages = list(messages)
+        if not messages:
+            await ctx.send("There are no recently deleted messages from this user!")
         for message in messages:
             if message["content"]:
                 await ctx.send(message["content"])
@@ -71,6 +89,7 @@ class DeletionDetector(commands.Cog):
             )
         main.db.deleted_messages.insert_one(
             {
+                "_id": str(uuid.uuid1()),
                 "guild_id": message.guild.id,
                 "author_id": message.author.id,
                 "content": message.content,
