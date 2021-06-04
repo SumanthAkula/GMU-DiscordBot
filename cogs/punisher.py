@@ -2,7 +2,6 @@ import time
 from enum import Enum
 
 import discord
-import pymongo.results
 from discord.ext import commands, tasks
 from discord.utils import get
 
@@ -131,14 +130,13 @@ class Punisher(commands.Cog):
         member: discord.Member = await guild.fetch_member(punishment["user_id"])
         role = get(guild.roles, name="muted")
         await member.remove_roles(role, reason="[AUTO] temporary mute expired")
-        result: pymongo.results.DeleteResult = main.db.punishments.delete_one(
+        main.db.punishments.delete_one(
             {
                 "guild_id": guild.id,
                 "user_id": member.id,
                 "type": Punishment.MUTE.value
             }
         )
-        print(result.raw_result)
 
         await member.send(f"Your temporary mute from the {guild.name} Discord server is over! You are free speak in the"
                           f" server again.")
