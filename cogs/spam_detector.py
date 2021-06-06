@@ -35,4 +35,8 @@ class SpamDetector(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(SpamDetector(bot))
+    """
+    disabled this shit so it wont auto ban people for no reason
+    """
+    return
+    # bot.add_cog(SpamDetector(bot))
