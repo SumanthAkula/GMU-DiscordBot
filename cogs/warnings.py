@@ -3,6 +3,7 @@ import uuid
 
 import discord
 import pymongo.results
+from bson.objectid import ObjectId
 from discord.ext import commands
 
 import main
@@ -20,7 +21,7 @@ class Warnings(commands.Cog):
     @commands.command(name="warn")
     @commands.guild_only()
     async def __add_warning_cmd(self, ctx: commands.Context, member: discord.Member, points: int,
-                                *, reason: str = "They were being a silly baka"):
+                                *, reason: str):
         """
         Gives a member in the server a warning.  If enough warnings are given, a punishment will be automatically
         enforced on the member.  The bot will generate a random ID that can be used to remove the warning later.
@@ -28,8 +29,7 @@ class Warnings(commands.Cog):
         Arguments:
             member: the member you want to warn
             points: the number of points the warning is worth
-            reason (optional): the reason for the warning. if no reason is given, the default one is "They were being a
-            silly baka"
+            reason: the reason for the warning
         """
         if points <= 0:
             await ctx.reply("The number of points has to be greater than or equal to 1!")
@@ -53,8 +53,8 @@ class Warnings(commands.Cog):
         """
         result: pymongo.results.DeleteResult = main.db.warnings.delete_one(
             {
-                "guild_id": ctx.guild.id,
-                "warning_id": f"{warning_id}"
+                "_id": ObjectId(warning_id),
+                "guild_id": ctx.guild.id
             }
         )
         await ctx.reply(":white_check_mark: Warning removed" if result.deleted_count != 0 else ":x: No warning with "
@@ -94,18 +94,16 @@ class Warnings(commands.Cog):
             return None
         return warnings[-1]
 
-    async def add_warning(self, guild_id, member_id, points: int, reason: str) -> str:
-        warning_id = str(uuid.uuid1())
-        main.db.warnings.insert_one(
+    async def add_warning(self, guild_id, member_id, points: int, reason: str) -> ObjectId:
+        warning_id = main.db.warnings.insert_one(
             {
                 "guild_id": guild_id,
-                "warning_id": warning_id,
                 "user_id": member_id,
                 "reason": reason,
                 "points": points,
                 "time": time.time()
             }
-        )
+        ).inserted_id
         warnings = await Warnings.get_warnings_for_user(guild_id, member_id)
         guild: discord.Guild = await self.bot.fetch_guild(guild_id)
         member: discord.Member = await guild.fetch_member(member_id)

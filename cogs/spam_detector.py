@@ -30,8 +30,8 @@ class SpamDetector(commands.Cog):
             # user has either never been warned before or hasn't been warned in the last 10 seconds, so add a warning
             warn_id = await Warnings(self.bot).add_warning(message.guild.id, message.author.id, 1, "[AUTO] spamming")
             await message.channel.send(
-                f":warning: [`{warn_id}`] {message.author.mention}, you have been given a 1 point warning for spamming"
-                f"\nIf you keep spamming, you will get another warning!")
+                f":warning: [`{str(warn_id)}`] {message.author.mention}, you have been given a 1 point warning for "
+                f"spamming\nIf you keep spamming, you will get another warning!")
 
 
 def setup(bot):
