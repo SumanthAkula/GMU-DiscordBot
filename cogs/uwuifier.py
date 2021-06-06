@@ -8,7 +8,8 @@ class Uwuifier(commands.Cog):
 
     @commands.command()
     async def uwu(self, ctx: commands.Context, *, msg):
-        await ctx.send(uwuify.uwu(msg))
+        flags = uwuify.SMILEY
+        await ctx.send(uwuify.uwu(msg, flags=flags))
 
 
 def setup(bot):
