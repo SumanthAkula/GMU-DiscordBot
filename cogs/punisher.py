@@ -20,6 +20,9 @@ class Punisher(commands.Cog):
 
     @staticmethod
     async def assign_punishment(guild: discord.Guild, member: discord.Member, warnings: list):
+        # TODO: ENABLE AUTO BAN
+        if guild.id == 807278087074611240:
+            return  # DO NOT BAN IN THE CS BOT TESTING DISCORD SERVER
         reasons = ""
         points = 0
         for i, warning in enumerate(warnings, start=1):
