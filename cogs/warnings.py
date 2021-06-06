@@ -1,5 +1,4 @@
 import time
-import uuid
 
 import discord
 import pymongo.results
