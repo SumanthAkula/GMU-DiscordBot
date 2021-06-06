@@ -15,6 +15,8 @@ class SpamDetector(commands.Cog):
             return
         if message.guild is None:
             return  # message was sent in DM, and we dont need to check for spam in DMs
+        if message.channel.id != 841531576494850058:
+            return
         member_messages = []
         for m in await message.channel.history(limit=10, before=message, oldest_first=False).flatten():
             if m.author.id == message.author.id and m.guild.id == message.guild.id:
@@ -38,5 +40,4 @@ def setup(bot):
     """
     disabled this shit so it wont auto ban people for no reason
     """
-    return
-    # bot.add_cog(SpamDetector(bot))
+    bot.add_cog(SpamDetector(bot))
