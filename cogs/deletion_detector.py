@@ -1,4 +1,3 @@
-import base64
 import os
 import time
 import uuid
@@ -65,7 +64,7 @@ class DeletionDetector(commands.Cog):
                     file_name = f"G{ctx.guild.id}_{a['filename']}"
                     with open(f"{DELETED_ATTACHMENTS_PATH}{file_name}", "wb") as fp:  # create a temporary file
                         # decode the base64 string and write it back to the file
-                        fp.write(base64.decodebytes(a["base64"]))
+                        fp.write(a["data"])
                     await ctx.send(file=discord.File(DELETED_ATTACHMENTS_PATH + file_name))
                     os.remove(DELETED_ATTACHMENTS_PATH + file_name)  # delete the temp file after sending it to discord
 
@@ -77,14 +76,12 @@ class DeletionDetector(commands.Cog):
             encode attachments as base64 strings to store them in the database easily
             """
             file = await a.to_file()
-            file = file.fp
-            b64 = base64.b64encode(file.read())
             attachments.append(
                 {
                     "attachment_id": a.id,
                     "filename": a.filename,
                     "type": a.content_type,
-                    "base64": b64
+                    "data": file.fp.read()
                 }
             )
         main.db.deleted_messages.insert_one(
