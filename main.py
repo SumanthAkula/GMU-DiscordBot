@@ -8,8 +8,8 @@ import secret  # super duper secret .py file used to store the bot token
 
 intents = discord.Intents.default()
 intents.members = True
-activity = discord.Activity(type=discord.ActivityType.listening, name="Suge")
-bot = commands.Bot(command_prefix=">", intents=intents, activity=activity)
+activity = discord.Game(name="with ur mom")
+bot = commands.Bot(command_prefix=":V ", intents=intents, activity=activity)
 
 # connect to database
 db = pymongo.MongoClient(secret.DB_REMOTE_URL)["botdb"]
