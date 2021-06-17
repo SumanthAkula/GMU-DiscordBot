@@ -49,13 +49,15 @@ class DeletionDetector(commands.Cog):
             for attachment in message.attachments:
                 orig = await attachment.to_file()
                 attachments.append(discord.File(fp=orig.fp, filename=attachment.filename))
-
-        await channel.send(f"```"
-                           f"author: {message.author.display_name}\n"
-                           f"time sent: {message.created_at}\n"
-                           f"time deleted: {datetime.fromtimestamp(time.time())}\n"
-                           f"content: {message.content}\n"
-                           f"```", files=None if not message.attachments else attachments)
+        est_time = message.created_at - timedelta(hours=4)
+        embed = discord.Embed(title="Deleted Message", color=0xff9838)
+        embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
+                         icon_url=message.author.avatar_url)
+        embed.add_field(name="time sent", value=est_time.strftime('%m/%d/%Y - %I:%M %p ET'), inline=False)
+        embed.add_field(name="channel", value=message.channel.mention, inline=False)
+        if message.content:
+            embed.add_field(name="content", value=message.content, inline=False)
+        await channel.send(embed=embed, files=None if not message.attachments else attachments)
 
     async def on_bulk_message_delete(self, messages: list[discord.Message]):
         pass  # TODO
