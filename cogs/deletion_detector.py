@@ -16,6 +16,12 @@ class DeletionDetector(commands.Cog):
     @commands.command(name="setdeletionlog", aliases=["sdl"])
     @commands.guild_only()
     async def __set_deletion_log_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+        """
+        Set the channel you want deleted messages to be logged to
+
+        Arguments:
+            channel: tag the channel you want deleted messages to be logged to
+        """
         if ctx.guild.id != channel.guild.id:
             await ctx.reply("The channel must be a channel from this server!")
             return
