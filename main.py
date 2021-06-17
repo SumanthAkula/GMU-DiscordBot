@@ -6,10 +6,17 @@ import pymongo
 
 import secret  # super duper secret .py file used to store the bot token
 
+bot_description = "This is a bot made by the nerds over in the GMU Computer Science discord server!"
+
 intents = discord.Intents.default()
 intents.members = True
 activity = discord.Game(name="with ur mom")
-bot = commands.Bot(command_prefix=":V ", intents=intents, activity=activity)
+bot = commands.Bot(command_prefix=":V ",
+                   description=bot_description,
+                   strip_after_prefix=True,
+                   case_insensitive=False,
+                   intents=intents,
+                   activity=activity)
 
 # connect to database
 db = pymongo.MongoClient(secret.DB_REMOTE_URL)["botdb"]
