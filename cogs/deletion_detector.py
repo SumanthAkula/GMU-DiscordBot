@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 
 import discord
@@ -57,12 +58,17 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         embed.add_field(name="channel", value=message.channel.mention, inline=False)
         if message.content:
             embed.add_field(name="content", value=message.content, inline=False)
-        links = ""
+        attachments = []
         if message.attachments:
             for attachment in message.attachments:
-                links += f"[{attachment.filename}]({attachment.url})\n"
-            embed.add_field(name="files", value=links)
-        await channel.send(embed=embed)
+                orig = await attachment.to_file()
+                # get the file size
+                orig.fp.seek(0, os.SEEK_END)
+                if orig.fp.tell() > message.guild.filesize_limit:
+                    attachments.append(discord.File("assets/file_too_big.jpg"))
+                else:
+                    attachments.append(discord.File(fp=orig.fp, filename=attachment.filename))
+        await channel.send(embed=embed, files=None if not attachments else attachments)
 
     async def on_bulk_message_delete(self, messages: list[discord.Message]):
         for message in messages:
