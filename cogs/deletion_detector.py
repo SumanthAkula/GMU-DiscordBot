@@ -8,7 +8,7 @@ import main
 from utils.log_channel_types import LogChannelType
 
 
-class DeletionDetector(commands.Cog):
+class DeletionDetector(commands.Cog, name="Deletion Detector"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -49,11 +49,6 @@ class DeletionDetector(commands.Cog):
         )["channel_id"]
         channel = await self.bot.fetch_channel(channel_id)
 
-        attachments = []
-        if message.attachments:
-            for attachment in message.attachments:
-                orig = await attachment.to_file()
-                attachments.append(discord.File(fp=orig.fp, filename=attachment.filename))
         est_time = message.created_at - timedelta(hours=4)
         embed = discord.Embed(title="Deleted Message", color=0xff9838)
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
@@ -62,10 +57,16 @@ class DeletionDetector(commands.Cog):
         embed.add_field(name="channel", value=message.channel.mention, inline=False)
         if message.content:
             embed.add_field(name="content", value=message.content, inline=False)
-        await channel.send(embed=embed, files=None if not message.attachments else attachments)
+        links = ""
+        if message.attachments:
+            for attachment in message.attachments:
+                links += f"[{attachment.filename}]({attachment.url})\n"
+            embed.add_field(name="files", value=links)
+        await channel.send(embed=embed)
 
     async def on_bulk_message_delete(self, messages: list[discord.Message]):
-        pass  # TODO
+        for message in messages:
+            await self.on_message_delete(message)
 
 
 def setup(bot):
