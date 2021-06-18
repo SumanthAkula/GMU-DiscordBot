@@ -14,7 +14,7 @@ activity = discord.Game(name="with ur mom")
 bot = commands.Bot(command_prefix=":V ",
                    description=bot_description,
                    strip_after_prefix=True,
-                   case_insensitive=False,
+                   case_insensitive=True,
                    intents=intents,
                    activity=activity)
 
