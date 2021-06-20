@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -38,17 +39,26 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             upsert=True
         )
 
+    async def get_logging_channel(self, guild_id: int) -> Union[None, discord.TextChannel]:
+        data = main.db.log_channels.find_one(
+            {
+                "guild_id": guild_id,
+                "log_type": LogChannelType.MessageDeletion.value
+            }
+        )
+        if data is None:
+            return None
+        else:
+            return await self.bot.fetch_channel(data["channel_id"])
+
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         if message.channel.type == discord.ChannelType.group or message.channel.type == discord.ChannelType.private:
             return  # do not log deleted messages in DMs
-        channel_id = main.db.log_channels.find_one(
-            {
-                "guild_id": message.guild.id,
-                "log_type": LogChannelType.MessageDeletion.value
-            }
-        )["channel_id"]
-        channel = await self.bot.fetch_channel(channel_id)
+        channel = await self.get_logging_channel(message.guild.id)
+        if channel is None:
+            await message.channel.send("No message deletion logging channel was found in this guild!")
+            return
 
         est_time = message.created_at - timedelta(hours=4)
         embed = discord.Embed(title="Deleted Message", color=0xff9838)
@@ -71,6 +81,10 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         await channel.send(embed=embed, files=None if not attachments else attachments)
 
     async def on_bulk_message_delete(self, messages: list[discord.Message]):
+        channel = await self.get_logging_channel(messages[0].guild.id)
+        if channel is None:
+            await messages[0].channel.send("No message deletion logging channel was found in this guild!")
+            return
         for message in messages:
             await self.on_message_delete(message)
 
