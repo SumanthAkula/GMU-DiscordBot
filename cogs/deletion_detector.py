@@ -80,13 +80,14 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
                     attachments.append(discord.File(fp=orig.fp, filename=attachment.filename))
         await channel.send(embed=embed, files=None if not attachments else attachments)
 
+    @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages: list[discord.Message]):
         channel = await self.get_logging_channel(messages[0].guild.id)
         if channel is None:
             await messages[0].channel.send("No message deletion logging channel was found in this guild!")
             return
         for message in messages:
-            await self.on_message_delete(message)
+            self.bot.dispatch("on_message_delete", message)
 
 
 def setup(bot):
