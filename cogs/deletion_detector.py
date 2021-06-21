@@ -1,4 +1,5 @@
 import os
+import tempfile
 from datetime import timedelta
 from typing import Union
 
@@ -61,33 +62,48 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             return
 
         est_time = message.created_at - timedelta(hours=4)
-        embed = discord.Embed(title="Deleted Message", color=0xff9838)
+        embed = discord.Embed(title="Deleted Message", color=discord.Color.orange())
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
                          icon_url=message.author.avatar_url)
         embed.add_field(name="time sent", value=est_time.strftime('%m/%d/%Y - %I:%M %p ET'), inline=False)
         embed.add_field(name="channel", value=message.channel.mention, inline=False)
+        attachments: list[discord.File] = []
+        temp_name = ""
         if message.content:
-            embed.add_field(name="content", value=message.content, inline=False)
-        attachments = []
+            if len(message.content) >= 1024:
+                with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp:
+                    temp.write(message.content)
+                    temp_name = temp.name
+                attachments.append(discord.File(fp=temp_name, filename=f"content.txt"))
+                content = f"The message was too long, so it has been attached as a text file called " \
+                          f"content.txt"
+            else:
+                content = message.content
+            embed.add_field(name="content", value=content, inline=False)
+        cdn_links: str = ""
         if message.attachments:
             for attachment in message.attachments:
-                orig = await attachment.to_file()
+                file = await attachment.to_file()
                 # get the file size
-                orig.fp.seek(0, os.SEEK_END)
-                if orig.fp.tell() > message.guild.filesize_limit:
+                file.fp.seek(0, os.SEEK_END)
+                filesize = file.fp.tell()
+                file.fp.seek(0)
+                if filesize > message.guild.filesize_limit:
                     attachments.append(discord.File("assets/file_too_big.jpg"))
                 else:
-                    attachments.append(discord.File(fp=orig.fp, filename=attachment.filename))
-        await channel.send(embed=embed, files=None if not attachments else attachments)
-
-    @commands.Cog.listener()
-    async def on_bulk_message_delete(self, messages: list[discord.Message]):
-        channel = await self.get_logging_channel(messages[0].guild.id)
-        if channel is None:
-            await messages[0].channel.send("No message deletion logging channel was found in this guild!")
-            return
-        for message in messages:
-            self.bot.dispatch("on_message_delete", message)
+                    file.fp.seek(0)
+                    attachments.append(file)
+                cdn_links += f"[{attachment.filename}]({attachment.url}) ({filesize / 1_048_576.0:.2f}MB)\n"
+            embed.add_field(name="attachment URLs (may not always work idk)", value=cdn_links)
+        try:
+            await channel.send(embed=embed, files=None if not attachments else attachments)
+        except discord.errors.HTTPException as e:
+            await channel.send(f"ERROR CODE: {e.code}\n"
+                               f"MESSAGE: {e}")
+        finally:
+            # if a temporary file was created for sending a message with large content, delete that file
+            if os.path.exists(temp_name):
+                os.remove(temp_name)
 
 
 def setup(bot):
