@@ -37,9 +37,19 @@ class Warnings(commands.Cog):
             await ctx.reply("Bro if you gotta warn someone for that many points just ban them at that point lmao")
             return
         warn_id = await self.add_warning(ctx.guild.id, member.id, points, reason)
-        await ctx.reply(f":warning: [`{warn_id}`] {member.mention}, you have been given a {points} point warning with "
-                        f"the reason \"{reason}\"\n"
-                        f"Fuck up one more time and I send the secret girls to break your knee caps")
+        message = f"{member.mention}, you have been given a {points} point warning!\n" \
+                  f"Fuck up one more time and I send the secret girls to break your knee caps"
+        embed = discord.Embed(title=":warning: Warning!",
+                              color=discord.Color.from_rgb(255, 214, 10),
+                              description=message)
+        embed.add_field(name="reason", value=reason)
+        embed.add_field(name="warning ID", value=f"`{warn_id}`", inline=False)
+        embed.add_field(name="think you were warned by mistake?", value="copy that warning ID and contact a moderator"
+                                                                        "to see if you can get the warning removed")
+        await member.send(embed=embed)
+        await ctx.reply(f"A warning has been sent to the member\n"
+                        f"`ID: `{warn_id}`\n"
+                        f"Run the `removewarning [warning ID]` command to remove the warning")
 
     @commands.command(name="removewarning", aliases=["unwarn", "rmw"])
     @commands.guild_only()
