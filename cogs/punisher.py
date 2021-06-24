@@ -16,6 +16,9 @@ class Punishment(Enum):
 class Punisher(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready(self):
         self.check_for_expired_punishments.start()
 
     @staticmethod
