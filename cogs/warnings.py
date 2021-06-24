@@ -3,7 +3,7 @@ import time
 import discord
 import pymongo.results
 from bson.objectid import ObjectId
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 import main
 from cogs.punisher import Punisher
@@ -16,6 +16,54 @@ class Warnings(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.autoremove_warning.start()
+
+    @tasks.loop(hours=12)
+    async def autoremove_warning(self):
+        _now = time.time()
+        one_week = _now - 604800
+        three_weeks = _now - (one_week * 3)
+        two_months = _now - (2629743 * 2)
+        six_months = _now - 15778463
+        main.db.warnings.delete_many(
+            {
+                "points": 1,
+                "time": {
+                    "$lte": one_week
+                }
+            }
+        )
+        main.db.warnings.delete_many(
+            {
+                "points": 2,
+                "time": {
+                    "$lte": three_weeks
+                }
+            }
+        )
+        main.db.warnings.delete_many(
+            {
+                "points": {
+                    "$in": [3, 4]
+                },
+                "time": {
+                    "$lte": two_months
+                }
+            }
+        )
+        main.db.warnings.delete_many(
+            {
+                "points": {
+                    "$in": list(range(5, 9))    # make the range end at 9 so it includes 8 point warnings
+                },
+                "time": {
+                    "$lte": six_months
+                }
+            }
+        )
 
     @commands.command(name="warn")
     @commands.guild_only()
@@ -44,11 +92,11 @@ class Warnings(commands.Cog):
                               description=message)
         embed.add_field(name="reason", value=reason)
         embed.add_field(name="warning ID", value=f"`{warn_id}`", inline=False)
-        embed.add_field(name="think you were warned by mistake?", value="copy that warning ID and contact a moderator"
+        embed.add_field(name="think you were warned by mistake?", value="copy that warning ID and contact a moderator "
                                                                         "to see if you can get the warning removed")
         await member.send(embed=embed)
         await ctx.reply(f"A warning has been sent to the member\n"
-                        f"`ID: `{warn_id}`\n"
+                        f"ID: `{warn_id}`\n"
                         f"Run the `removewarning [warning ID]` command to remove the warning")
 
     @commands.command(name="removewarning", aliases=["unwarn", "rmw"])
