@@ -1,6 +1,5 @@
 import os
 import tempfile
-from datetime import timedelta
 from typing import Union
 
 import discord
@@ -61,11 +60,10 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             await message.channel.send("No message deletion logging channel was found in this guild!")
             return
 
-        est_time = message.created_at - timedelta(hours=4)
         embed = discord.Embed(title="Deleted Message", color=discord.Color.orange())
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
                          icon_url=message.author.avatar_url)
-        embed.add_field(name="time sent", value=est_time.strftime('%m/%d/%Y - %I:%M %p ET'), inline=False)
+        embed.add_field(name="time sent", value=message.created_at.strftime('%m/%d/%Y - %I:%M %p UTC'), inline=False)
         embed.add_field(name="channel", value=message.channel.mention, inline=False)
         attachments: list[discord.File] = []
         temp_name = ""
