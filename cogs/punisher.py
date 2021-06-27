@@ -92,13 +92,27 @@ class Punisher(commands.Cog):
         if ctx.author == member:
             await ctx.reply("you can't ban yourself using this command")
             return
+        user = f"{member.name}#{member.discriminator}"
         await self.ban_member(ctx.guild, member, length, reason)
+        embed = discord.Embed(title=f"Banned {user}", color=discord.Color.red())
+        embed.add_field(name="reason(s)", value=reason, inline=False)
+        embed.add_field(name="duration", value=f"{length} day(s)" if length >= 0 else "*permanent*", inline=False)
+        await ctx.reply(embed=embed)
 
     @staticmethod
     async def ban_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
         lenstr = f"for {length} day(s)" if length >= 0 else "indefinitely"
-        await member.send(f"You have been banned {lenstr} from the {guild.name} Discord server for the "
-                          f"following reason(s):\n{reason}")
+        if "VANITY_URL" in guild.features:
+            invite = await guild.vanity_invite()
+        else:
+            invite = await guild.system_channel.create_invite(max_uses=1)
+        message = f"You have been banned {lenstr} from the {guild.name} Discord server"
+        embed = discord.Embed(title="You have been banned!", description=message, color=discord.Color.red())
+        embed.add_field(name="reason(s)", value=reason, inline=False)
+        if length >= 0:
+            embed.add_field(name="invite", value=f"When your ban ends, you can rejoin the server with this invite:\n"
+                                                 f"{invite}", inline=False)
+        await member.send(embed=embed)
         await member.ban(delete_message_days=0, reason=reason)
 
         if length <= 0:
