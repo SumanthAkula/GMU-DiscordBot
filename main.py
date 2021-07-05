@@ -12,7 +12,7 @@ bot_description = f"DISCORD.PY VERSION {discord.__version__}\n" \
 intents = discord.Intents.default()
 intents.members()
 activity = discord.Game(name="with ur mom")
-bot = commands.Bot(command_prefix=":V ",
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(":V "),
                    description=bot_description,
                    strip_after_prefix=True,
                    case_insensitive=True,
