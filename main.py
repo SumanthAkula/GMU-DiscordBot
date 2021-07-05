@@ -10,7 +10,7 @@ bot_description = f"DISCORD.PY VERSION {discord.__version__}\n" \
                   f"This is a bot made by the nerds over in the GMU Computer Science discord server!"
 
 intents = discord.Intents.default()
-intents.members()
+intents.members = True  # FIXME: figure out why this is throwing warnings
 activity = discord.Game(name="with ur mom")
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(":V "),
                    description=bot_description,
