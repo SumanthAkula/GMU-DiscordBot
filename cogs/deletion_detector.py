@@ -62,7 +62,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
 
         embed = discord.Embed(title="Deleted Message", color=discord.Color.orange())
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
-                         icon_url=message.author.avatar_url)
+                         icon_url=message.author.avatar.url)
         embed.add_field(name="time sent", value=message.created_at.strftime('%m/%d/%Y - %I:%M %p UTC'), inline=False)
         embed.add_field(name="channel", value=message.channel.mention, inline=False)
         attachments: list[discord.File] = []

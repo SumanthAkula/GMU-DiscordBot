@@ -9,7 +9,7 @@ import secret  # super duper secret .py file used to store the bot token
 bot_description = "This is a bot made by the nerds over in the GMU Computer Science discord server!"
 
 intents = discord.Intents.default()
-intents.members = True
+intents.members()
 activity = discord.Game(name="with ur mom")
 bot = commands.Bot(command_prefix=":V ",
                    description=bot_description,
