@@ -85,16 +85,6 @@ class Warnings(commands.Cog):
             await ctx.reply("Bro if you gotta warn someone for that many points just ban them at that point lmao")
             return
         warn_id = await self.add_warning(ctx.guild.id, member.id, points, reason)
-        message = f"{member.mention}, you have been given a {points} point warning!\n" \
-                  f"Fuck up one more time and I send the secret girls to break your knee caps"
-        embed = discord.Embed(title=":warning: Warning!",
-                              color=discord.Color.from_rgb(255, 214, 10),
-                              description=message)
-        embed.add_field(name="reason", value=reason)
-        embed.add_field(name="warning ID", value=f"`{warn_id}`", inline=False)
-        embed.add_field(name="think you were warned by mistake?", value="copy that warning ID and contact a moderator "
-                                                                        "to see if you can get the warning removed")
-        await member.send(embed=embed)
         await ctx.reply(f"A warning has been sent to the member\n"
                         f"ID: `{warn_id}`\n"
                         f"Run the `removewarning [warning ID]` command to remove the warning")
@@ -151,7 +141,7 @@ class Warnings(commands.Cog):
             return None
         return warnings[-1]
 
-    async def add_warning(self, guild_id, member_id, points: int, reason: str) -> ObjectId:
+    async def add_warning(self, guild_id: int, member_id: int, points: int, reason: str) -> ObjectId:
         warning_id = main.db.warnings.insert_one(
             {
                 "guild_id": guild_id,
@@ -164,7 +154,18 @@ class Warnings(commands.Cog):
         warnings = await Warnings.get_warnings_for_user(guild_id, member_id)
         guild: discord.Guild = await self.bot.fetch_guild(guild_id)
         member: discord.Member = await guild.fetch_member(member_id)
+        message = f"{member.mention}, you have been given a {points} point warning!\n" \
+                  f"Fuck up one more time and I send the secret girls to break your knee caps"
+        embed = discord.Embed(title=":warning: Warning!",
+                              color=discord.Color.from_rgb(255, 214, 10),
+                              description=message)
+        embed.add_field(name="reason", value=reason)
+        embed.add_field(name="warning ID", value=f"`{warning_id}`", inline=False)
+        embed.add_field(name="think you were warned by mistake?", value="copy that warning ID and contact a moderator "
+                                                                        "to see if you can get the warning removed")
+        await member.send(embed=embed)
         await Punisher.assign_punishment(guild, member, warnings)
+
         return warning_id
 
 
