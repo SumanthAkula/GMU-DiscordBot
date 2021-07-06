@@ -1,13 +1,33 @@
 import time
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from cogs.warnings import Warnings
 
 
 class SpamDetector(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.message_cache: [discord.Message] = []
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.clear_cache.start()
+
+    @tasks.loop(seconds=10)
+    async def clear_cache(self):
+        self.message_cache = []
+
+    async def on_tenth_message(self, messages: [discord.Message]):
+        # check if the last 10 messages were all sent within 5 seconds of each other
+        if messages[-1].created_at.timestamp() - messages[0].created_at.timestamp() > 5:
+            return
+        await self.warn(messages[0])
+
+        # clear author from cache after warning has been given
+        for message in self.message_cache:
+            if message.author.id == messages[0].author.id and message.guild.id == messages[0].guild.id:
+                self.message_cache.remove(message)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -15,16 +35,14 @@ class SpamDetector(commands.Cog):
             return
         if message.guild is None:
             return  # message was sent in DM, and we dont need to check for spam in DMs
-        if message.channel.id != 841531576494850058:
-            return
-        member_messages = []
-        for m in await message.channel.history(limit=10, before=message, oldest_first=False).flatten():
-            if m.author.id == message.author.id and m.guild.id == message.guild.id:
-                member_messages.append(m)
-        if not member_messages:
-            return
-        if message.created_at.timestamp() - member_messages[-1].created_at.timestamp() < 10:
-            await self.warn(message)
+
+        self.message_cache.append(message)  # add message to cache
+
+        # get all messages in the cache sent by the user that sent the message passed in
+        messages = \
+            [m for m in self.message_cache if m.author.id == message.author.id and m.guild.id == message.guild.id]
+        if len(messages) >= 10: # if they sent 10 messages, check if they're spam
+            await self.on_tenth_message(messages)
 
     async def warn(self, message: discord.Message):
         recent = await Warnings.get_most_recent_warning(message.guild.id, message.author.id)
