@@ -66,14 +66,10 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
     @commands.command(name="banned_words")
     @commands.guild_only()
     async def __banned_words_cmd(self, ctx: commands.Context):
-        words = main.db[BANNED_WORDS].find(
-            {
-                "guild_id": ctx.guild.id
-            }
-        )
-        embed = discord.Embed(title="Banned Words", color=discord.Color.teal())
-        if not words:
-            embed.description = "There are no banned words in this server"
+        words = await BannedWords.get_banned_words(ctx.guild.id)
+        description = ""
+        if not list(words):
+            description = "There are no banned words in this server"
         else:
             for word in words:
                 description += f"{word['token']}\n"
