@@ -55,7 +55,7 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
     async def unban_word(guild_id: int, word: str) -> bool:
         result: pymongo.results.DeleteResult = main.db[BANNED_WORDS].delete_one(
             {
-                "guild_id": ctx.guild.id,
+                "guild_id": guild_id,
                 "token": word.lower()
             }
         )
