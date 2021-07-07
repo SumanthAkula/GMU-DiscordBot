@@ -58,12 +58,17 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
         await ctx.reply(embed=embed)
 
     @staticmethod
-    async def has_banned_word(guild_id: int, content: str) -> bool:
+    async def get_banned_words(guild_id: int):
         words = main.db[BANNED_WORDS].find(
             {
                 "guild_id": guild_id
             }
         )
+        return list(words)
+
+    @staticmethod
+    async def has_banned_word(guild_id: int, content: str) -> bool:
+        words = await BannedWords.get_banned_words(guild_id)
 
         for word in words:
             if content.find(word["token"]) != -1:
