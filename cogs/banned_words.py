@@ -60,9 +60,8 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
             }
         )
         if result.deleted_count < 1:
-            await ctx.reply(":x: That word was not found on the banned words list! Nothing was removed")
-        else:
-            await ctx.reply(f":white_check_mark: '{word}' was successfully removed from the banned words list")
+            return False
+        return True
 
     @commands.command(name="banned_words")
     @commands.guild_only()
