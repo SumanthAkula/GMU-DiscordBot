@@ -29,7 +29,30 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
 
     @commands.command(name="unban_word")
     @commands.guild_only()
-    async def __unban_word_cmd(self, ctx: commands.Context, word: str):
+    async def __unban_word_cmd(self, ctx: commands.Context):
+        words = await BannedWords.get_banned_words(ctx.guild.id)
+        if not words:
+            await ctx.send("There are no banned words in this server!")
+            return
+        options: [discord.SelectOption] = []
+        for word in words:
+            options.append(discord.SelectOption(label=word["token"], default=False))
+
+        class WordsList(discord.ui.View):
+            @discord.ui.select(placeholder="Select a word to unban...", options=options)
+            async def selection_made(self, select_menu: discord.ui.Select, interaction: discord.Interaction):
+                if interaction.user != ctx.author:
+                    return
+                result = await BannedWords.unban_word(interaction.guild_id, select_menu.values[0])
+                if result:
+                    await interaction.message.edit(f":white_check_mark: "
+                                                   f"The word '{select_menu.values[0]}' is now unbanned!", view=None)
+                else:
+                    await interaction.message.edit(":x: That word could not be unbanned :(", view=None)
+        await ctx.send("Choose a word to unban", view=WordsList())
+
+    @staticmethod
+    async def unban_word(guild_id: int, word: str) -> bool:
         result: pymongo.results.DeleteResult = main.db[BANNED_WORDS].delete_one(
             {
                 "guild_id": ctx.guild.id,
