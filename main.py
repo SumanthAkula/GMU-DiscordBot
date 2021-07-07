@@ -8,8 +8,7 @@ import secret  # super duper secret .py file used to store the bot token
 
 bot_description = f"This is a bot made by the nerds over in the GMU Computer Science discord server!"
 
-intents = discord.Intents.default()
-intents.members = True  # FIXME: figure out why this is throwing warnings
+intents = discord.Intents.all()
 activity = discord.Game(name=f"discord.py {discord.__version__}")
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(":V "),
                    description=bot_description,
