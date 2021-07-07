@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 import main
+from utils.database.collections import LOG_CHANNELS
 
 from utils.log_channel_types import LogChannelType
 
@@ -26,7 +27,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         if ctx.guild.id != channel.guild.id:
             await ctx.reply("The channel must be a channel from this server!")
             return
-        main.db.log_channels.replace_one(
+        main.db[LOG_CHANNELS].replace_one(
             {
                 "guild_id": ctx.guild.id,
                 "log_type": LogChannelType.MessageDeletion.value
@@ -40,7 +41,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         )
 
     async def get_logging_channel(self, guild_id: int) -> Union[None, discord.TextChannel]:
-        data = main.db.log_channels.find_one(
+        data = main.db[LOG_CHANNELS].find_one(
             {
                 "guild_id": guild_id,
                 "log_type": LogChannelType.MessageDeletion.value

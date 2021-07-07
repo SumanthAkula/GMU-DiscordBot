@@ -1,0 +1,6 @@
+BANNED_WORDS = "banned_words"
+LOG_CHANNELS = "log_channels"
+PUNISHMENTS = "punishments"
+WARNINGS = "warnings"
+BIRTHDAYS = "birthdays"
+REMINDERS = "reminders"

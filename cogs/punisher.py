@@ -6,6 +6,7 @@ from discord.ext import commands, tasks
 from discord.utils import get
 
 import main
+from utils.database.collections import PUNISHMENTS
 
 
 class Punishment(Enum):
@@ -43,7 +44,7 @@ class Punisher(commands.Cog):
     @staticmethod
     async def __add_punishment_to_db(guild_id: int, member_id: int, punishment_type: Punishment,
                                      length: int, reason: str):
-        main.db.punishments.insert_one(
+        main.db[PUNISHMENTS].insert_one(
             {
                 "guild_id": guild_id,
                 "user_id": member_id,
@@ -57,7 +58,7 @@ class Punisher(commands.Cog):
     @tasks.loop(seconds=10)
     async def check_for_expired_punishments(self):
         now = time.time()
-        punishments = main.db.punishments.find(
+        punishments = main.db[PUNISHMENTS].find(
             {
                 "length": {
                     "$gte": 1
@@ -122,7 +123,7 @@ class Punisher(commands.Cog):
     # UNBANNING USERS
     @commands.Cog.listener()
     async def on_member_unban(self, guild: discord.Guild, user: discord.User):
-        main.db.punishments.delete_one(
+        main.db[PUNISHMENTS].delete_one(
             {
                 "guild_id": guild.id,
                 "user_id": user.id,
@@ -150,7 +151,7 @@ class Punisher(commands.Cog):
         member: discord.Member = await guild.fetch_member(punishment["user_id"])
         role = get(guild.roles, name="muted")
         await member.remove_roles(role, reason="[AUTO] temporary mute expired")
-        main.db.punishments.delete_one(
+        main.db[PUNISHMENTS].delete_one(
             {
                 "guild_id": guild.id,
                 "user_id": member.id,

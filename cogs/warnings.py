@@ -7,6 +7,7 @@ from discord.ext import commands, tasks
 
 import main
 from cogs.punisher import Punisher
+from utils.database.collections import WARNINGS
 
 
 class Warnings(commands.Cog):
@@ -28,7 +29,7 @@ class Warnings(commands.Cog):
         three_weeks = _now - (one_week * 3)
         two_months = _now - (2629743 * 2)
         six_months = _now - 15778463
-        main.db.warnings.delete_many(
+        main.db[WARNINGS].delete_many(
             {
                 "points": 1,
                 "time": {
@@ -36,7 +37,7 @@ class Warnings(commands.Cog):
                 }
             }
         )
-        main.db.warnings.delete_many(
+        main.db[WARNINGS].delete_many(
             {
                 "points": 2,
                 "time": {
@@ -44,7 +45,7 @@ class Warnings(commands.Cog):
                 }
             }
         )
-        main.db.warnings.delete_many(
+        main.db[WARNINGS].delete_many(
             {
                 "points": {
                     "$in": [3, 4]
@@ -54,7 +55,7 @@ class Warnings(commands.Cog):
                 }
             }
         )
-        main.db.warnings.delete_many(
+        main.db[WARNINGS].delete_many(
             {
                 "points": {
                     "$in": list(range(5, 9))    # make the range end at 9 so it includes 8 point warnings
@@ -98,7 +99,7 @@ class Warnings(commands.Cog):
         Arguments:
             warning_id: the ID of the warning you are trying to remove
         """
-        result: pymongo.results.DeleteResult = main.db.warnings.delete_one(
+        result: pymongo.results.DeleteResult = main.db[WARNINGS].delete_one(
             {
                 "_id": ObjectId(warning_id),
                 "guild_id": ctx.guild.id
@@ -126,7 +127,7 @@ class Warnings(commands.Cog):
 
     @staticmethod
     async def get_warnings_for_user(guild_id: int, member_id: int) -> list:
-        member_warnings = main.db.warnings.find(
+        member_warnings = main.db[WARNINGS].find(
             {
                 "guild_id": guild_id,
                 "user_id": member_id
@@ -142,7 +143,7 @@ class Warnings(commands.Cog):
         return warnings[-1]
 
     async def add_warning(self, guild_id: int, member_id: int, points: int, reason: str) -> ObjectId:
-        warning_id = main.db.warnings.insert_one(
+        warning_id = main.db[WARNINGS].insert_one(
             {
                 "guild_id": guild_id,
                 "user_id": member_id,
