@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 
 import main
+from cogs.banned_words import BannedWords
 from utils.database.collections import LOG_CHANNELS
 
 from utils.log_channel_types import LogChannelType
@@ -61,7 +62,9 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             await message.channel.send("No message deletion logging channel was found in this guild!")
             return
 
-        embed = discord.Embed(title="Deleted Message", color=discord.Color.orange())
+        color = discord.Color.red() if await BannedWords.has_banned_word(message.guild.id, message.content) \
+            else discord.Color.orange()
+        embed = discord.Embed(title="Deleted Message", color=color)
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
                          icon_url=message.author.avatar.url)
         embed.add_field(name="time sent", value=message.created_at.strftime('%m/%d/%Y - %I:%M %p UTC'), inline=False)
