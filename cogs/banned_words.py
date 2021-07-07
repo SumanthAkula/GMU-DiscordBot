@@ -25,7 +25,7 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
                 "token": word.lower()
             }
         )
-        await ctx.send(f"Banned ||{word}|| from being said in this server!")
+        await ctx.send(f"Banned '{word}' from being said in this server!")
 
     @commands.command(name="unban_word")
     @commands.guild_only()
