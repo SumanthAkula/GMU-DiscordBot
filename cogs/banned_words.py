@@ -77,7 +77,9 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
             embed.description = "There are no banned words in this server"
         else:
             for word in words:
-                embed.description += f"{word['token']}\n"
+                description += f"{word['token']}\n"
+        embed = discord.Embed(title="Banned Words", color=discord.Color.teal(), description=description)
+
         await ctx.reply(embed=embed)
 
     @staticmethod
