@@ -156,7 +156,7 @@ class Warnings(commands.Cog):
         guild: discord.Guild = self.bot.get_guild(guild_id)
         member: discord.Member = await guild.fetch_member(member_id)
         message = f"{member.mention}, you have been given a {points} point warning!\n" \
-                  f"Fuck up one more time and I send the secret girls to break your knee caps"
+                  f"Fuck up one more time and I send the secret girls to break your nico-nico knee caps"
         embed = discord.Embed(title=":warning: Warning!",
                               color=discord.Color.from_rgb(255, 214, 10),
                               description=message)
