@@ -103,8 +103,9 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
         ctx: commands.Context = await self.bot.get_context(message)
         if ctx.valid:
             return
-        if await self.has_banned_word(message.guild.id, message.content):
-            await Warnings(self.bot).add_warning(message.guild.id, message.author.id, 8, "[AUTO] said a banned word")
+        if (result := await self.has_banned_word(message.guild.id, message.content))[0]:
+            await Warnings(self.bot).add_warning(message.guild.id, message.author.id, 8, f"[AUTO] said a banned word: "
+                                                                                         f"{result[1]}")
             await message.delete()
 
 
