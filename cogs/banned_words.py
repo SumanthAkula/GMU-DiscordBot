@@ -3,6 +3,7 @@ import pymongo.results
 from discord.ext import commands
 
 import main
+from cogs.warnings import Warnings
 from utils.database.collections import BANNED_WORDS
 
 
@@ -103,7 +104,7 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
         if ctx.valid:
             return
         if await self.has_banned_word(message.guild.id, message.content):
-            await message.channel.send(f"{message.author.mention}, you cannot say that here")
+            await Warnings(self.bot).add_warning(message.guild.id, message.author.id, 8, "[AUTO] said a banned word")
             await message.delete()
 
 
