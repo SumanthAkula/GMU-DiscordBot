@@ -88,13 +88,13 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
         return list(words)
 
     @staticmethod
-    async def has_banned_word(guild_id: int, content: str) -> bool:
+    async def has_banned_word(guild_id: int, content: str) -> (bool, str):
         words = await BannedWords.get_banned_words(guild_id)
 
         for word in words:
             if content.find(word["token"]) != -1:
-                return True
-        return False
+                return True, word["token"]
+        return False, None
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
