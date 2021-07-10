@@ -45,10 +45,11 @@ class SpamDetector(commands.Cog):
             await self.on_tenth_message(messages)
 
     async def warn(self, message: discord.Message):
-        recent = await Warnings.get_most_recent_warning(message.guild.id, message.author.id)
+        recent = await self.bot.get_cog("Warnings").get_most_recent_warning(message.guild.id, message.author.id)
         if recent is None or time.time() - recent["time"] > 10:
             # user has either never been warned before or hasn't been warned in the last 10 seconds, so add a warning
-            warn_id = await Warnings(self.bot).add_warning(message.guild.id, message.author.id, 1, "[AUTO] spamming")
+            warn_id = await self.bot.get_cog("Warnings").add_warning(message.guild.id, message.author.id, 1,
+                                                                     "[AUTO] spamming")
             await message.channel.send(
                 f":warning: [`{str(warn_id)}`] {message.author.mention}, you have been given a 1 point warning for "
                 f"spamming\nIf you keep spamming, you will get another warning!")
