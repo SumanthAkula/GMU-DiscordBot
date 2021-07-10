@@ -3,7 +3,6 @@ import pymongo.results
 from discord.ext import commands
 
 import main
-from cogs.warnings import Warnings
 from utils.database.collections import BANNED_WORDS
 
 
@@ -43,6 +42,8 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
             @discord.ui.select(placeholder="Select a word to unban...", options=options)
             async def selection_made(self, select_menu: discord.ui.Select, interaction: discord.Interaction):
                 if interaction.user != ctx.author:
+                    await interaction.response.send_message("Only the person who ran the command can remove a word from"
+                                                            " this list!", ephemeral=True)
                     return
                 result = await BannedWords.unban_word(interaction.guild_id, select_menu.values[0])
                 if result:
