@@ -2,7 +2,6 @@ import time
 
 import discord
 from discord.ext import commands, tasks
-from cogs.warnings import Warnings
 
 
 class SpamDetector(commands.Cog):

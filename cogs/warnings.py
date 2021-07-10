@@ -6,7 +6,6 @@ from bson.objectid import ObjectId
 from discord.ext import commands, tasks
 
 import main
-from cogs.punisher import Punisher
 from utils.database.collections import WARNINGS
 
 
@@ -152,7 +151,7 @@ class Warnings(commands.Cog):
                 "time": time.time()
             }
         ).inserted_id
-        warnings = await Warnings.get_warnings_for_user(guild_id, member_id)
+        warnings = await self.get_warnings_for_user(guild_id, member_id)
         guild: discord.Guild = self.bot.get_guild(guild_id)
         member: discord.Member = guild.get_member(member_id)
         message = f"{member.mention}, you have been given a {points} point warning!\n" \
@@ -165,7 +164,7 @@ class Warnings(commands.Cog):
         embed.add_field(name="think you were warned by mistake?", value="copy that warning ID and contact a moderator "
                                                                         "to see if you can get the warning removed")
         await member.send(embed=embed)
-        await Punisher.assign_punishment(guild, member, warnings)
+        await self.bot.get_cog("Punisher").assign_punishment(guild, member, warnings)
 
         return warning_id
 
