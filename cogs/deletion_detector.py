@@ -62,7 +62,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             await message.channel.send("No message deletion logging channel was found in this guild!")
             return
 
-        color = discord.Color.red() if await BannedWords.has_banned_word(message.guild.id, message.content) \
+        color = discord.Color.red() if (await BannedWords.has_banned_word(message.guild.id, message.content))[0] \
             else discord.Color.orange()
         embed = discord.Embed(title="Deleted Message", color=color)
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
