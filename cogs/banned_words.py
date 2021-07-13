@@ -35,7 +35,11 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
             },
             upsert=True
         )
-        await ctx.send(f"Banned '{word}' from being said in this server!")
+
+        if result.matched_count >= 1:
+            await ctx.reply(":x: That word is already banned in this server!")
+        else:
+            await ctx.reply(f":white_check_mark: Banned '{word}' from being said in this server!")
 
     @commands.command(name="unban_word")
     @commands.guild_only()
