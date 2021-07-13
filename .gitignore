@@ -5,3 +5,5 @@ secret.py
 test.py
 tmp/deleted_attachments/*
 .devcontainer
+venv_linux/
+venv_win/
