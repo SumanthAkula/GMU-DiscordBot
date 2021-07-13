@@ -19,11 +19,21 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
         Arguments:
             word: the word to ban
         """
-        main.db[BANNED_WORDS].insert_one(
+        if len(await self.get_banned_words(ctx.guild.id)) >= 25:
+            await ctx.reply("There cannot be more than 25 words banned in a server! Remove one and try again.")
+            return
+
+        result: pymongo.results.UpdateResult = main.db[BANNED_WORDS].update_one(
             {
-                "guild_id": ctx.guild.id,
                 "token": word.lower()
-            }
+            },
+            {
+                "$set": {
+                    "guild_id": ctx.guild.id,
+                    "token": word.lower()
+                }
+            },
+            upsert=True
         )
         await ctx.send(f"Banned '{word}' from being said in this server!")
 
