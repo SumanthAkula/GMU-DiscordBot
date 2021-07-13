@@ -39,7 +39,8 @@ class SpamDetector(commands.Cog):
 
         # get all messages in the cache sent by the user that sent the message passed in
         messages = \
-            [m for m in self.message_cache if m.author.id == message.author.id and m.guild.id == message.guild.id]
+            [m for m in self.message_cache if m.author.id ==
+                message.author.id and m.guild.id == message.guild.id]
         if len(messages) >= 10:     # if they sent 10 messages, check if they're spam
             await self.on_tenth_message(messages)
 
