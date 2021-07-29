@@ -68,7 +68,10 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         embed.set_author(name=f"{message.author.name}#{message.author.discriminator}",
                          icon_url=message.author.avatar.url)
         embed.add_field(name="time sent", value=message.created_at.strftime('%m/%d/%Y - %I:%M %p UTC'), inline=False)
-        embed.add_field(name="channel", value=message.channel.mention, inline=False)
+        if isinstance(message.channel, discord.Thread):
+            embed.add_field(name="thread", value=f"{message.channel.parent.mention} -> {message.channel.mention}")
+        else:
+            embed.add_field(name="channel", value=message.channel.mention, inline=False)
         attachments: list[discord.File] = []
         temp_name = ""
         if message.content:
