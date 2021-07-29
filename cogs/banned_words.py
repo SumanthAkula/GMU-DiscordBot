@@ -115,6 +115,8 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
     async def on_message(self, message: discord.Message):
         if message.author == self.bot.user:
             return
+        if message.channel.type == discord.ChannelType.private or message.channel.type == discord.ChannelType.group:
+            return
         ctx: commands.Context = await self.bot.get_context(message)
         if ctx.valid:
             return
