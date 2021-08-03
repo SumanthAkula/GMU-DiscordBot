@@ -98,6 +98,22 @@ class BirthdayManager(commands.Cog):
         else:
             await ctx.reply(f"Your birthday is on {bday['birthday'].strftime('%B %d, %Y')}")
 
+    @__bday_command.command("delete", aliases=["remove", "rm", "del"], pass_context=True, invoke_without_command=True)
+    async def __delete(self, ctx: commands.Context):
+        """
+        Deletes your birthday from the bot's database
+        """
+        result = main.db[BIRTHDAYS].delete_many(
+            {
+                "guild_id": ctx.guild.id,
+                "member_id": ctx.author.id
+            }
+        )
+        if result.deleted_count >= 1:
+            await ctx.reply(":white_check_mark: Your birthday was deleted from the bot!")
+        else:
+            await ctx.reply(":x: You have no birthday stored on this bot")
+
     @__bday_command.command("age", pass_context=True, invoke_without_command=True)
     async def __age(self, ctx: commands.Context, member: Optional[discord.Member]):
         """
