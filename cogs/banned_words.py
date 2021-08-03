@@ -23,8 +23,10 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
             await ctx.reply("There cannot be more than 25 words banned in a server! Remove one and try again.")
             return
 
+        # TODO: test repeated words
         result: pymongo.results.UpdateResult = main.db[BANNED_WORDS].update_one(
             {
+                "guild_id": ctx.guild.id,
                 "token": word.lower()
             },
             {
