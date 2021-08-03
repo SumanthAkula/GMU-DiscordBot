@@ -48,6 +48,7 @@ class BirthdayManager(commands.Cog):
         await ctx.send(f"Run the `{ctx.prefix}help birthday` for information on how to use this command")
 
     @__bday_command.command("set", pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
     async def __set(self, ctx: commands.Context, birthday: str):
         """
         Set or change your birthday
@@ -83,6 +84,7 @@ class BirthdayManager(commands.Cog):
             await ctx.reply(":white_check_mark: Your birthday has been added")
 
     @__bday_command.command("get", pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
     async def __get(self, ctx: commands.Context):
         """
         Get your birthday (in case you forget it or something lol)
@@ -99,6 +101,7 @@ class BirthdayManager(commands.Cog):
             await ctx.reply(f"Your birthday is on {bday['birthday'].strftime('%B %d, %Y')}")
 
     @__bday_command.command("delete", aliases=["remove", "rm", "del"], pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
     async def __delete(self, ctx: commands.Context):
         """
         Deletes your birthday from the bot's database
@@ -115,6 +118,7 @@ class BirthdayManager(commands.Cog):
             await ctx.reply(":x: You have no birthday stored on this bot")
 
     @__bday_command.command("age", pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
     async def __age(self, ctx: commands.Context, member: Optional[discord.Member]):
         """
         Get the age of you or another member in the server
