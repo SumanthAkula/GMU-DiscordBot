@@ -18,7 +18,7 @@ class BirthdayManager(commands.Cog):
     async def on_ready(self):
         self.birthday_checker.start()
 
-    @tasks.loop(seconds=1)
+    @tasks.loop(minutes=30)
     async def birthday_checker(self):
         bdays = main.db[BIRTHDAYS].find()
         today = datetime.datetime.now()
