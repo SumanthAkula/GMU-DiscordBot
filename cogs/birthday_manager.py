@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 
 import main
 from utils.database.collections import BIRTHDAYS
+from utils.log_channel_types import LogChannelType
 
 
 class BirthdayManager(commands.Cog):
@@ -26,18 +27,24 @@ class BirthdayManager(commands.Cog):
             if bday["birthday"].day == today.day and bday["birthday"].month == today.month\
                     and today.year - bday["last_wished"].year >= 1:
                 # it's someone's birthday, so we gotta wish them
-                print(f"Happy birthday {bday['member_id']}!")
-                main.db[BIRTHDAYS].update_one(
-                    {
-                        "_id": bday["_id"]
-                    },
-                    {
-                        "$set": {
-                            "last_wished": today
-                        }
-                    },
-                    upsert=True
-                )
+                await self.wish_bday(bday, today)
+
+    async def wish_bday(self, bday: dict, today: datetime):
+        channel: discord.TextChannel = \
+            await self.bot.get_cog("LoggerChannels").get_channel(self.bot, bday["guild_id"], LogChannelType.General)
+        member = await channel.guild.get_member(bday["member_id"])
+        await channel.send(f"HAPPY MF BDAYYYY {member.mention}")
+        main.db[BIRTHDAYS].update_one(
+            {
+                "_id": bday["_id"]
+            },
+            {
+                "$set": {
+                    "last_wished": today
+                }
+            },
+            upsert=True
+        )
 
     @commands.group("birthday", aliases=["bday"], pass_context=True, invoke_without_command=True)
     @commands.guild_only()
