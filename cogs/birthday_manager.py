@@ -45,7 +45,7 @@ class BirthdayManager(commands.Cog):
         """
         Get or set your birthday and the bot can wish you a happy birthday
         """
-        await ctx.send(f"Run the `{ctx.prefix}help birthday` for information on how to use this command")
+        await ctx.send(f"Run the `{ctx.prefix}help birthday` command for information on how to use this command")
 
     @__bday_command.command("set", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
