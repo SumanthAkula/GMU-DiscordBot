@@ -82,6 +82,7 @@ class LoggerChannels(commands.Cog):
             },
             upsert=True
         )
+        await ctx.reply(f":white_check_mark: set {channel.mention} as `{log_type.name}` channel")
 
 
 def setup(bot):
