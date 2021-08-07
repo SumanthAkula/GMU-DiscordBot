@@ -45,7 +45,7 @@ class LoggerChannels(commands.Cog):
                 return self.selected_type
 
         view = LogTypeSelector()
-        original = await ctx.reply("Uhh idk what im doing :V", view=view)
+        original: discord.Message = await ctx.reply("Chose an option from the dropdown menu", view=view)
 
         def integration_check(_interaction: discord.Interaction):
             return _interaction.user == ctx.author and \
@@ -56,7 +56,8 @@ class LoggerChannels(commands.Cog):
         await self.set_channel(ctx, view.get_type, channel)
         print(f"type selected: {view.get_type}")
 
-    async def set_channel(self, ctx: commands.Context, log_type: LogChannelType, channel: discord.TextChannel):
+    @staticmethod
+    async def set_channel(ctx: commands.Context, log_type: LogChannelType, channel: discord.TextChannel):
         if ctx.guild.id != channel.guild.id:
             await ctx.reply("The channel must be a text channel from this server!")
             return
