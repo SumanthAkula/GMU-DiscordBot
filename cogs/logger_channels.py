@@ -37,8 +37,6 @@ class LoggerChannels(commands.Cog):
                                                             "select a log type!", ephemeral=True)
                     return
                 self.selected_type = LogChannelType[select_menu.values[0]]
-                await interaction.message.edit(f"Tag the channel you would like to set as the "
-                                               f"{self.selected_type.name} log channel", view=None)
 
             @property
             def get_type(self):
