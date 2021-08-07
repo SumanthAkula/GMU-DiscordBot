@@ -20,6 +20,8 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
     @commands.guild_only()
     async def __set_deletion_log_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         """
+        **DEPRECATED - USE `channel set` INSTEAD!**
+
         Set the channel you want deleted messages to be logged to
 
         Arguments:
