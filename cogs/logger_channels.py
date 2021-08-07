@@ -45,7 +45,7 @@ class LoggerChannels(commands.Cog):
         view = LogTypeSelector()
         original: discord.Message = await ctx.reply("Chose an option from the dropdown menu", view=view)
 
-        def integration_check(_interaction: discord.Interaction):
+        def interaction_check(_interaction: discord.Interaction):
             return _interaction.user == ctx.author and \
                    _interaction.channel == ctx.channel and \
                    _interaction.application_id == self.bot.application_id and \
