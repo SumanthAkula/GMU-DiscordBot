@@ -50,7 +50,19 @@ class LoggerChannels(commands.Cog):
                    _interaction.channel == ctx.channel and \
                    _interaction.application_id == self.bot.application_id and \
                    _interaction.message == original
-        await self.bot.wait_for("interaction", check=integration_check)
+        await self.bot.wait_for("interaction", check=interaction_check, timeout=view.timeout)
+
+        await original.edit(content=f"Reply to this message and tag the channel you would like to set as the "
+                                    f"{view.get_type.name} log channel", view=None)
+
+        def message_check(_message: discord.Message):
+            return _message.guild == ctx.guild and \
+                   _message.author == ctx.author and \
+                   _message.channel == ctx.channel and \
+                   _message.channel_mentions and \
+                   _message.reference.message_id == original.id
+        channel: discord.TextChannel = \
+            (await self.bot.wait_for("message", check=message_check, timeout=180)).channel_mentions[0]
         await self.set_channel(ctx, view.get_type, channel)
         print(f"type selected: {view.get_type}")
 
