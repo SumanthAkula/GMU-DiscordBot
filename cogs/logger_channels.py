@@ -64,7 +64,6 @@ class LoggerChannels(commands.Cog):
         channel: discord.TextChannel = \
             (await self.bot.wait_for("message", check=message_check, timeout=180)).channel_mentions[0]
         await self.set_channel(ctx, view.get_type, channel)
-        print(f"type selected: {view.get_type}")
 
     @staticmethod
     async def set_channel(ctx: commands.Context, log_type: LogChannelType, channel: discord.TextChannel):
