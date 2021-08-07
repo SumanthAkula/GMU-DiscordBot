@@ -26,7 +26,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             channel: tag the channel you want deleted messages to be logged to
         """
         if ctx.guild.id != channel.guild.id:
-            await ctx.reply("The channel must be a channel from this server!")
+            await ctx.reply("The channel must be a text channel from this server!")
             return
         main.db[LOG_CHANNELS].replace_one(
             {
