@@ -84,6 +84,19 @@ class LoggerChannels(commands.Cog):
         )
         await ctx.reply(f":white_check_mark: set {channel.mention} as `{log_type.name}` channel")
 
+    @staticmethod
+    async def get_channel(bot: commands.Bot, guild_id: int, log_type: LogChannelType):
+        data = main.db[LOG_CHANNELS].find_one(
+            {
+                "guild_id": guild_id,
+                "log_type": log_type.value
+            }
+        )
+        if data is None:
+            return None
+        else:
+            return await bot.fetch_channel(data["channel_id"])
+
 
 def setup(bot):
     bot.add_cog(LoggerChannels(bot))
