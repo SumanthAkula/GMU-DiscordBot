@@ -18,9 +18,10 @@ class Boost(commands.Cog):
             gen_chat: discord.TextChannel = \
                 await self.bot.get_cog("LoggerChannels").get_channel(self.bot, after.guild.id, LogChannelType.General)
             embed = discord.Embed(title="AYYYY A NEW BOOSTER LETS GOOOOO", color=nitro_role.color)
-            embed.set_image(url="attachment://assets/booster_banner.PNG")
+            embed.set_image(
+                url="https://raw.githubusercontent.com/Sc0pz/DiscordBot/notsumo_Dev/assets/booster_banner.PNG")
             embed.description = after.mention
-            await gen_chat.send(file=discord.File("assets/booster_banner.PNG"), embed=embed)
+            await gen_chat.send(embed=embed)
 
 
 def setup(bot):
