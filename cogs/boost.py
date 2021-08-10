@@ -10,8 +10,7 @@ class Boost(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        # nitro_role = before.guild.premium_subscriber_role
-        nitro_role = before.guild.get_role(874326425979740171)  # TODO: set this to the actual role on release
+        nitro_role = before.guild.premium_subscriber_role
         if nitro_role is None:
             return
         if nitro_role not in before.roles and nitro_role in after.roles:
