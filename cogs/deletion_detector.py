@@ -43,23 +43,13 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
             upsert=True
         )
 
-    async def get_logging_channel(self, guild_id: int) -> Union[None, discord.TextChannel]:
-        data = main.db[LOG_CHANNELS].find_one(
-            {
-                "guild_id": guild_id,
-                "log_type": LogChannelType.MessageDeletion.value
-            }
-        )
-        if data is None:
-            return None
-        else:
-            return await self.bot.fetch_channel(data["channel_id"])
-
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         if message.channel.type == discord.ChannelType.group or message.channel.type == discord.ChannelType.private:
             return  # do not log deleted messages in DMs
-        channel = await self.get_logging_channel(message.guild.id)
+        channel = \
+            await self.bot.get_cog("LoggerChannels").get_channel(self.bot, message.guild.id,
+                                                                 LogChannelType.MessageDeletion)
         if channel is None:
             await message.channel.send("No message deletion logging channel was found in this guild!")
             return
