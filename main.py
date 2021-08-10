@@ -6,7 +6,8 @@ import pymongo
 
 import secret  # super duper secret .py file used to store the bot token
 
-bot_description = f"This is a bot made by the nerds over in the GMU Computer Science discord server!"
+bot_description = f"This is a bot made by the nerds over in the GMU Computer Science discord server!\n" \
+                  f"This specific bot was developed by Sumo Akula on the notsumo_Dev branch"
 
 intents = discord.Intents.all()
 activity = discord.Game(name=f"discord.py {discord.__version__}")

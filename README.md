@@ -1,5 +1,6 @@
 # DiscordBot
 Python Based Discord Bot created by the GMU CS community
+This branch is managed by Sumo Akula
 
 ## File structure
 * `assets/` contain images/files that the bot might need to send to Discord.  
