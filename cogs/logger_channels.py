@@ -23,7 +23,7 @@ class LoggerChannels(commands.Cog):
     async def __set(self, ctx: commands.Context):
         options: [discord.SelectOption] = []
         for log_type in LogChannelType:
-            options.append(discord.SelectOption(label=log_type.name, default=False))
+            options.append(discord.SelectOption(label=log_type.name, default=False, description=log_type.value[1]))
 
         class LogTypeSelector(discord.ui.View):
             def __init__(self):
