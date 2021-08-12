@@ -65,7 +65,15 @@ class Warnings(commands.Cog):
             }
         )
 
-    @commands.command(name="warn")
+    @commands.group("warning", aliases=["warn"], pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
+    async def __warning(self, ctx: commands.Context):
+        """
+        A command to manage warnings
+        """
+        await ctx.reply(f"Run {ctx.clean_prefix}help {ctx.command.name} for information on how to use this command")
+
+    @__warning.command(name="add", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
     async def __add_warning_cmd(self, ctx: commands.Context, member: discord.Member, points: int,
                                 *, reason: str):
@@ -89,7 +97,7 @@ class Warnings(commands.Cog):
                         f"ID: `{warn_id}`\n"
                         f"Run the `removewarning [warning ID]` command to remove the warning")
 
-    @commands.command(name="removewarning", aliases=["unwarn", "rmw"])
+    @__warning.command(name="remove", aliases=["rm", "delete", "del"], pass_context=True, invoke_without_command=True)
     @commands.guild_only()
     async def __remove_warning(self, ctx: commands.Context, warning_id: str):
         """
@@ -107,7 +115,7 @@ class Warnings(commands.Cog):
         await ctx.reply(":white_check_mark: Warning removed" if result.deleted_count != 0 else ":x: No warning with "
                                                                                                "that ID exists!")
 
-    @commands.command(name="warncount", aliases=["wc"])
+    @__warning.command(name="count", aliases=["num"], pass_context=True, invoke_without_command=True)
     @commands.guild_only()
     async def __get_warning_count(self, ctx: commands.Context, member: discord.Member):
         """
