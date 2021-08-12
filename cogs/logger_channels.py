@@ -99,11 +99,11 @@ class LoggerChannels(commands.Cog):
         main.db[LOG_CHANNELS].replace_one(
             {
                 "guild_id": ctx.guild.id,
-                "log_type": log_type.value
+                "log_type": log_type.value[0]
             },
             {
                 "guild_id": ctx.guild.id,
-                "log_type": log_type.value,
+                "log_type": log_type.value[0],
                 "channel_id": channel.id
             },
             upsert=True
@@ -115,7 +115,7 @@ class LoggerChannels(commands.Cog):
         data = main.db[LOG_CHANNELS].find_one(
             {
                 "guild_id": guild_id,
-                "log_type": log_type.value
+                "log_type": log_type.value[0]
             }
         )
         if data is None:
