@@ -71,7 +71,7 @@ class Warnings(commands.Cog):
         """
         A command to manage warnings
         """
-        await ctx.reply(f"Run {ctx.clean_prefix}help {ctx.command.name} for information on how to use this command")
+        await ctx.reply(f"Run `{ctx.clean_prefix}help {ctx.command.name}` for information on how to use this command")
 
     @__warning.command(name="add", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
