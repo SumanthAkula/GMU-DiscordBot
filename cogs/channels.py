@@ -6,7 +6,7 @@ from utils.database.collections import LOG_CHANNELS
 from utils.log_channel_types import LogChannelType
 
 
-class LoggerChannels(commands.Cog):
+class Channels(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -14,7 +14,8 @@ class LoggerChannels(commands.Cog):
     @commands.guild_only()
     async def __channel_cmd(self, ctx: commands.Context):
         """
-        You can set channels as 'logs' the bot can send messages to for moderation purposes
+        This bot can automatically send messages to channels that you get to specify.  Stuff like deleted messages can
+        be sent to their own channel that only moderators have access to for example.
         """
         await ctx.reply(f"Run the `{ctx.prefix}help channel` command for more information on how to use this command")
 
@@ -55,7 +56,7 @@ class LoggerChannels(commands.Cog):
         await self.bot.wait_for("interaction", check=interaction_check, timeout=view.timeout)
 
         await original.edit(content=f"Reply to this message and tag the channel you would like to set as the "
-                                    f"`{view.get_type.name}` log channel", view=None)
+                                    f"`{view.get_type.name}` channel", view=None)
 
         def message_check(_message: discord.Message):
             return _message.guild == ctx.guild and \
@@ -127,4 +128,4 @@ class LoggerChannels(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(LoggerChannels(bot))
+    bot.add_cog(Channels(bot))
