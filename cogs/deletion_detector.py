@@ -50,8 +50,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         channel = \
             await self.bot.get_cog("LoggerChannels").get_channel(self.bot, message.guild.id,
                                                                  LogChannelType.MessageDeletion)
-        if channel is None:
-            await message.channel.send("No message deletion logging channel was found in this guild!")
+        if channel is None:  # if no channel is found, dont log the message
             return
 
         color = discord.Color.red() if (await BannedWords.has_banned_word(message.guild.id, message.content))[0] \
