@@ -55,7 +55,7 @@ class LoggerChannels(commands.Cog):
         await self.bot.wait_for("interaction", check=interaction_check, timeout=view.timeout)
 
         await original.edit(content=f"Reply to this message and tag the channel you would like to set as the "
-                                    f"{view.get_type.name} log channel", view=None)
+                                    f"`{view.get_type.name}` log channel", view=None)
 
         def message_check(_message: discord.Message):
             return _message.guild == ctx.guild and \
