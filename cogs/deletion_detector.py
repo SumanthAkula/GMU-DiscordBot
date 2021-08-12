@@ -1,13 +1,10 @@
 import os
 import tempfile
-from typing import Union
 
 import discord
 from discord.ext import commands
 
-import main
 from cogs.banned_words import BannedWords
-from utils.database.collections import LOG_CHANNELS
 
 from utils.log_channel_types import LogChannelType
 
@@ -15,33 +12,6 @@ from utils.log_channel_types import LogChannelType
 class DeletionDetector(commands.Cog, name="Deletion Detector"):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.command(name="setdeletionlog", aliases=["sdl"])
-    @commands.guild_only()
-    async def __set_deletion_log_channel(self, ctx: commands.Context, channel: discord.TextChannel):
-        """
-        **DEPRECATED - USE `channel set` INSTEAD!**
-
-        Set the channel you want deleted messages to be logged to
-
-        Arguments:
-            channel: tag the channel you want deleted messages to be logged to
-        """
-        if ctx.guild.id != channel.guild.id:
-            await ctx.reply("The channel must be a text channel from this server!")
-            return
-        main.db[LOG_CHANNELS].replace_one(
-            {
-                "guild_id": ctx.guild.id,
-                "log_type": LogChannelType.MessageDeletion.value
-            },
-            {
-                "guild_id": ctx.guild.id,
-                "log_type": LogChannelType.MessageDeletion.value,
-                "channel_id": channel.id
-            },
-            upsert=True
-        )
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
