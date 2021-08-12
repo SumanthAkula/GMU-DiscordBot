@@ -43,7 +43,8 @@ class LoggerChannels(commands.Cog):
                 return self.selected_type
 
         view = LogTypeSelector()
-        original: discord.Message = await ctx.reply("Chose an option from the dropdown menu", view=view)
+        original: discord.Message = await ctx.reply(
+            f"You have {view.timeout:.0f} seconds to choose an option", view=view)
 
         def interaction_check(_interaction: discord.Interaction):
             return _interaction.user == ctx.author and \
