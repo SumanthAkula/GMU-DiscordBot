@@ -90,7 +90,7 @@ class LoggerChannels(commands.Cog):
         embed = discord.Embed(title="Channel Type Help")
         embed.description = ""
         for log_type in LogChannelType:
-            embed.add_field(name=f"`{log_type.name}`", value={log_type.value[1]}, inline=False)
+            embed.add_field(name=f"`{log_type.name}`", value=log_type.value[1], inline=False)
         await ctx.reply(embed=embed)
 
     @staticmethod
