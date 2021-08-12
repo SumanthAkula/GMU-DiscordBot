@@ -50,6 +50,7 @@ class LoggerChannels(commands.Cog):
                    _interaction.channel == ctx.channel and \
                    _interaction.application_id == self.bot.application_id and \
                    _interaction.message == original
+
         await self.bot.wait_for("interaction", check=interaction_check, timeout=view.timeout)
 
         await original.edit(content=f"Reply to this message and tag the channel you would like to set as the "
