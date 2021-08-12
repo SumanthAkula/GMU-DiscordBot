@@ -46,6 +46,9 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
     @commands.command(name="unban_word")
     @commands.guild_only()
     async def __unban_word_cmd(self, ctx: commands.Context):
+        """
+        Remove a word from the "banned words" list
+        """
         words = await BannedWords.get_banned_words(ctx.guild.id)
         if not words:
             await ctx.send("There are no banned words in this server!")
@@ -84,6 +87,9 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
     @commands.command(name="banned_words")
     @commands.guild_only()
     async def __banned_words_cmd(self, ctx: commands.Context):
+        """
+        Show a list of all the banned words in this server
+        """
         words = await BannedWords.get_banned_words(ctx.guild.id)
         description = ""
         if not list(words):
