@@ -65,6 +65,32 @@ class LoggerChannels(commands.Cog):
             (await self.bot.wait_for("message", check=message_check, timeout=180)).channel_mentions[0]
         await self.set_channel(ctx, view.get_type, channel)
 
+    @__channel_cmd.command("get", pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
+    async def __get(self, ctx: commands.Context):
+        """
+        Prints all of the channels that are current set on the bot.
+        """
+        embed = discord.Embed(title="Channels")
+        embed.description = ""
+        for log_type in LogChannelType:
+            channel = await self.get_channel(self.bot, ctx.guild.id, log_type)
+            embed.description += \
+                f"`{log_type.name}` - {channel.mention if channel is not None else '*None!*'}\n"
+        await ctx.reply(embed=embed)
+
+    @__channel_cmd.command("help", pass_context=True, invoke_without_command=True)
+    @commands.guild_only()
+    async def __help(self, ctx: commands.Context):
+        """
+        Sends the descriptions of all the channel types the bot can use
+        """
+        embed = discord.Embed(title="Channel Type Help")
+        embed.description = ""
+        for log_type in LogChannelType:
+            embed.add_field(name=f"`{log_type.name}`", value={log_type.value[1]}, inline=False)
+        await ctx.reply(embed=embed)
+
     @staticmethod
     async def set_channel(ctx: commands.Context, log_type: LogChannelType, channel: discord.TextChannel):
         if ctx.guild.id != channel.guild.id:
