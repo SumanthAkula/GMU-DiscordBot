@@ -23,7 +23,10 @@ class ErrorHandler(commands.Cog):
             await ctx.reply(f"This command is on a cooldown, "
                            f"try running that command again in {error.retry_after} second(s)")
         elif isinstance(error, errors.DisabledCommand):
-            await ctx.send("You cannot run that command because it has been disabled")
+            await ctx.reply("You cannot run that command because it has been disabled")
+        elif isinstance(error, errors.CommandInvokeError):
+            if isinstance(error.original, asyncio.exceptions.TimeoutError):
+                await ctx.reply("The command you were trying to run timed out! ")
         else:
             await ctx.reply(str(error))
             raise error
