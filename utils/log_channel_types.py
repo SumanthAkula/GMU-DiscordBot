@@ -7,4 +7,5 @@ class LogChannelType(Enum):
     """
     General = 0, "The channel where Happy Birthday and Good Morning messages will be sent.  The guild's 'General' chat"
     MessageDeletion = 1, "The channel that deleted messages will be logged to"
+    InviteCreation = 2, "The channel that new invite creations will be logged to"
     # add other log types as needed
