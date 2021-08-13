@@ -31,7 +31,7 @@ class BirthdayManager(commands.Cog):
 
     async def wish_bday(self, bday: dict, today: datetime):
         channel: discord.TextChannel = \
-            await self.bot.get_cog("LoggerChannels").get_channel(self.bot, bday["guild_id"], LogChannelType.General)
+            await self.bot.get_cog("LoggerChannels").get_channel(bday["guild_id"], LogChannelType.General)
         member = channel.guild.get_member(bday["member_id"])
         await channel.send(f"HAPPY MF BDAYYYY {member.mention}")
         main.db[BIRTHDAYS].update_one(

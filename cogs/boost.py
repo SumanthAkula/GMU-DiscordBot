@@ -15,7 +15,7 @@ class Boost(commands.Cog):
             return
         if nitro_role not in before.roles and nitro_role in after.roles:
             gen_chat: discord.TextChannel = \
-                await self.bot.get_cog("LoggerChannels").get_channel(self.bot, after.guild.id, LogChannelType.General)
+                await self.bot.get_cog("LoggerChannels").get_channel(after.guild.id, LogChannelType.General)
             embed = discord.Embed(title="AYYYY A NEW BOOSTER LETS GOOOOO", color=nitro_role.color)
             embed.set_image(
                 url="https://raw.githubusercontent.com/Sc0pz/DiscordBot/notsumo_Dev/assets/booster_banner.PNG")

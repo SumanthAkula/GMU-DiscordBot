@@ -79,7 +79,7 @@ class Channels(commands.Cog):
         embed = discord.Embed(title="Channels")
         embed.description = ""
         for log_type in LogChannelType:
-            channel = await self.get_channel(self.bot, ctx.guild.id, log_type)
+            channel = await self.get_channel(ctx.guild.id, log_type)
             embed.description += \
                 f"`{log_type.name}` - {channel.mention if channel is not None else '*None!*'}\n"
         await ctx.reply(embed=embed)
