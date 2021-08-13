@@ -1,3 +1,5 @@
+from typing import Optional
+
 import discord
 from discord.ext import commands
 
@@ -113,8 +115,20 @@ class Channels(commands.Cog):
         )
         await ctx.reply(f":white_check_mark: set {channel.mention} as `{log_type.name}` channel")
 
-    @staticmethod
-    async def get_channel(bot: commands.Bot, guild_id: int, log_type: LogChannelType):
+    async def get_channel(self, guild_id: int, log_type: LogChannelType) -> Optional[discord.TextChannel]:
+        """
+        Get a bot channel from the database (if one is set)
+
+        Args:
+            guild_id: the ID of the guild the channel is in
+            log_type: the type of log this channel is for.
+
+        See Also:
+            see the doc for :class:`LogChannelType` for information of `log_type`
+
+        Returns:
+            discord.TextChannel if a channel of the specified type is set.  Otherwise None will be returned
+        """
         data = main.db[LOG_CHANNELS].find_one(
             {
                 "guild_id": guild_id,
@@ -124,7 +138,7 @@ class Channels(commands.Cog):
         if data is None:
             return None
         else:
-            return await bot.fetch_channel(data["channel_id"])
+            return await self.bot.fetch_channel(data["channel_id"])
 
 
 def setup(bot):
