@@ -36,27 +36,5 @@ async def on_ready():
     print("bot started!")
 
 
-@bot.event
-async def on_message(message: discord.Message):
-    if message.author == bot.user:
-        return
-    if message.content.find("ayy") != -1:
-        await message.channel.send("lmao")
-    await bot.process_commands(message)
-
-
-# TODO: REMOVE THESE ON RELEASE
-@bot.command(hidden=True)
-async def load_cog(ctx: commands.Context, cog: str):
-    bot.load_extension(f"cogs.{cog}")
-    await ctx.send(f"loaded {cog}")
-
-
-@bot.command(hidden=True)
-async def unload_cog(ctx: commands.Context, cog: str):
-    bot.unload_extension(f"cogs.{cog}")
-    await ctx.send(f"unloaded {cog}")
-
-
 if __name__ == "__main__":
     bot.run(secret.TOKEN)
