@@ -21,11 +21,12 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(":V "),
 
 # connect to database
 try:
-    db = pymongo.MongoClient(secret.DB_REMOTE_URL)["botdb"]
-except pymongo.errors.ConfigurationError:
+    db = pymongo.MongoClient(secret.DB_REMOTE_URL)["botdb"]     # attempt to connect to the database
+except pymongo.errors.ConfigurationError:   # if the connection fails, print the most likely reason and exit the program
     print("Connecting to the database took too long! Are you connected to the internet?")
     exit(100)
 
+# load all cogs in the ./cogs folder (that's pretty much every file that ends in .py in that folder)
 for f in os.listdir("./cogs"):
     if f.endswith(".py"):
         bot.load_extension(f"cogs.{f[:-3]}")
