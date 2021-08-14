@@ -18,7 +18,7 @@ class DeletionDetector(commands.Cog, name="Deletion Detector"):
         if message.channel.type == discord.ChannelType.group or message.channel.type == discord.ChannelType.private:
             return  # do not log deleted messages in DMs
         channel = \
-            await self.bot.get_cog("LoggerChannels").get_channel(message.guild.id, LogChannelType.MessageDeletion)
+            await self.bot.get_cog("Channels").get_channel(message.guild.id, LogChannelType.MessageDeletion)
         if channel is None:  # if no channel is found, dont log the message
             return
 
