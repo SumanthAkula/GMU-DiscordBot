@@ -3,7 +3,6 @@ import os
 import discord
 from discord.ext import commands
 import pymongo
-from pymongo import errors
 
 import secret  # super duper secret .py file used to store the bot token
 from utils.database.collections import DISABLED_COMMANDS
@@ -21,11 +20,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(":V "),
                    activity=activity)
 
 # connect to database
-try:
-    db = pymongo.MongoClient(secret.DB_REMOTE_URL)["botdb"]     # attempt to connect to the database
-except pymongo.errors.ConfigurationError:   # if the connection fails, print the most likely reason and exit the program
-    print("Connecting to the database took too long! Are you connected to the internet?")
-    exit(100)
+db = pymongo.MongoClient(secret.DB_REMOTE_URL, connectTimeoutMS=60000)["botdb"]
 
 # load all cogs in the ./cogs folder (that's pretty much every file that ends in .py in that folder)
 for f in os.listdir("./cogs"):
