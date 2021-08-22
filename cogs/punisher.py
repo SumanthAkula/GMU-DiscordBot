@@ -70,10 +70,10 @@ class Punisher(commands.Cog):
             return
         for punishment in punishments:
             if punishment["type"] == Punishment.BAN.value:
-                if now - punishment["time"] >= punishment["length"] * 60:
+                if now - punishment["time"] >= punishment["length"] * 86400:
                     await self.revoke_temp_ban(punishment)
             elif punishment["type"] == Punishment.MUTE.value:
-                if now - punishment["time"] >= punishment["length"] * 60:
+                if now - punishment["time"] >= punishment["length"] * 3600:
                     await self.revoke_temp_mute(punishment)
 
     # BANNING USERS
@@ -103,16 +103,17 @@ class Punisher(commands.Cog):
     @staticmethod
     async def ban_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
         lenstr = f"for {length} day(s)" if length >= 0 else "indefinitely"
-        if "VANITY_URL" in guild.features:
-            invite = await guild.vanity_invite()
-        else:
-            invite = await guild.system_channel.create_invite(max_uses=1)
         message = f"You have been banned {lenstr} from the {guild.name} Discord server"
         embed = discord.Embed(title="You have been banned!", description=message, color=discord.Color.red())
         embed.add_field(name="reason(s)", value=reason, inline=False)
-        if length >= 0:
-            embed.add_field(name="invite", value=f"When your ban ends, you can rejoin the server with this invite:\n"
-                                                 f"{invite}", inline=False)
+        if length > 0:
+            if "VANITY_URL" in guild.features:
+                invite = await guild.vanity_invite()
+            else:
+                invite = await guild.system_channel.create_invite(max_uses=1)
+            embed.add_field(name="invite",
+                            value=f"When your ban ends, you can rejoin the server with this invite:\n"
+                                  f"{invite}", inline=False)
         await member.send(embed=embed)
         await member.ban(delete_message_days=0, reason=reason)
 
