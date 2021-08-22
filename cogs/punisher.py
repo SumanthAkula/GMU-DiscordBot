@@ -138,6 +138,13 @@ class Punisher(commands.Cog):
         user: discord.User = await self.bot.fetch_user(ban["user_id"])
         await guild.unban(user, reason="[AUTO] temporary ban timer expired")
 
+    @commands.Command("mute")
+    @commands.guild_only()
+    @commands.has_permissions(ban_members=True)
+    async def __mute_member(self, ctx: commands.Context, member: discord.Member, length: int, *, reason: str):
+        await self.mute_member(ctx.guild, member, length, reason)
+        await ctx.reply(f":white_check_mark: Muted {member.mention} for {length} hour(s)")
+
     # MUTING MEMBERS
     @staticmethod
     async def mute_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
