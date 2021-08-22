@@ -12,6 +12,7 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
 
     @commands.command(name="ban_word")
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __ban_word_cmd(self, ctx: commands.Context, word: str):
         """
         Adds 'word' to the list of words than cannot be said in text channels
@@ -45,6 +46,7 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
 
     @commands.command(name="unban_word")
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __unban_word_cmd(self, ctx: commands.Context):
         """
         Remove a word from the "banned words" list
@@ -66,10 +68,10 @@ class BannedWords(commands.Cog, name="Banned Word Remover"):
                     return
                 result = await BannedWords.unban_word(interaction.guild_id, select_menu.values[0])
                 if result:
-                    await interaction.message.edit(f":white_check_mark: "
+                    await interaction.message.edit(content=f":white_check_mark: "
                                                    f"The word '{select_menu.values[0]}' is now unbanned!", view=None)
                 else:
-                    await interaction.message.edit(":x: That word could not be unbanned :(", view=None)
+                    await interaction.message.edit(content=":x: That word could not be unbanned :(", view=None)
         await ctx.send("Choose a word to unban", view=WordsList())
 
     @staticmethod

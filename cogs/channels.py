@@ -14,6 +14,7 @@ class Channels(commands.Cog):
 
     @commands.group("channel", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __channel_cmd(self, ctx: commands.Context):
         """
         This bot can automatically send messages to channels that you get to specify.  Stuff like deleted messages can
@@ -23,6 +24,7 @@ class Channels(commands.Cog):
 
     @__channel_cmd.command("set", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __set(self, ctx: commands.Context):
         options: [discord.SelectOption] = []
         for log_type in LogChannelType:
@@ -72,6 +74,7 @@ class Channels(commands.Cog):
 
     @__channel_cmd.command("get", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __get(self, ctx: commands.Context):
         """
         Prints all of the channels that are current set on the bot.
@@ -86,6 +89,7 @@ class Channels(commands.Cog):
 
     @__channel_cmd.command("help", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __help(self, ctx: commands.Context):
         """
         Sends the descriptions of all the channel types the bot can use

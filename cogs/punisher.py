@@ -79,6 +79,7 @@ class Punisher(commands.Cog):
     # BANNING USERS
     @commands.command(name="ban")
     @commands.guild_only()
+    @commands.has_permissions(ban_members=True)
     async def __ban_member_cmd(self, ctx: commands.Context, member: discord.Member, length: int, *, reason: str):
         """
         Bans a member for a specified amount of time (or indefinitely if you want).  The member will be automatically

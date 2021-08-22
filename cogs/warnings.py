@@ -67,6 +67,7 @@ class Warnings(commands.Cog):
 
     @commands.group("warning", aliases=["warn"], pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __warning(self, ctx: commands.Context):
         """
         A command to manage warnings
@@ -75,6 +76,7 @@ class Warnings(commands.Cog):
 
     @__warning.command(name="add", pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __add_warning_cmd(self, ctx: commands.Context, member: discord.Member, points: int,
                                 *, reason: str):
         """
@@ -95,10 +97,11 @@ class Warnings(commands.Cog):
         warn_id = await self.add_warning(ctx.guild.id, member.id, points, reason)
         await ctx.reply(f"A warning has been sent to the member\n"
                         f"ID: `{warn_id}`\n"
-                        f"Run the `removewarning [warning ID]` command to remove the warning")
+                        f"Run the `warning remove [warning ID]` command to remove the warning")
 
     @__warning.command(name="remove", aliases=["rm", "delete", "del"], pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __remove_warning(self, ctx: commands.Context, warning_id: str):
         """
         Removes a warning from the member that is passed in.
@@ -117,6 +120,7 @@ class Warnings(commands.Cog):
 
     @__warning.command(name="count", aliases=["num"], pass_context=True, invoke_without_command=True)
     @commands.guild_only()
+    @commands.has_permissions(administrator=True)
     async def __get_warning_count(self, ctx: commands.Context, member: discord.Member):
         """
         Prints out how many warnings a member has and how many total warning points they have.
