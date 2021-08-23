@@ -145,6 +145,24 @@ class Punisher(commands.Cog):
         await self.mute_member(ctx.guild, member, length, reason)
         await ctx.reply(f":white_check_mark: Muted {member.mention} for {length} hour(s)")
 
+    @commands.command(name="unmute")
+    @commands.guild_only()
+    @commands.has_permissions(ban_members=True)
+    async def __unmute_member(self, ctx: commands.Context, member: discord.Member):
+        print("huh")
+        data = main.db[PUNISHMENTS].delete_one(
+            {
+                "guild_id": ctx.guild.id,
+                "user_id": member.id,
+                "type": Punishment.MUTE.value
+            }
+        )
+        if data is None:
+            await ctx.reply(":x: That member is not muted")
+            return
+        await self.revoke_temp_mute(data)
+        await ctx.reply(f":white_check_mark: Unmuted {member.mention}")
+
     # MUTING MEMBERS
     @staticmethod
     async def mute_member(guild: discord.Guild, member: discord.Member, length: int, reason: str):
