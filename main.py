@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(":V "),
                    activity=activity)
 
 # connect to database
-db = pymongo.MongoClient(secret.DB_REMOTE_URL)["botdb"]
+db = pymongo.MongoClient(secret.DB_LOCAL_URL)["botdb"]
 
 # load all cogs in the ./cogs folder (that's pretty much every file that ends in .py in that folder)
 for f in os.listdir("./cogs"):
