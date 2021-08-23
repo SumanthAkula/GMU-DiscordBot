@@ -149,8 +149,7 @@ class Punisher(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def __unmute_member(self, ctx: commands.Context, member: discord.Member):
-        print("huh")
-        data = main.db[PUNISHMENTS].delete_one(
+        data = main.db[PUNISHMENTS].find_one(
             {
                 "guild_id": ctx.guild.id,
                 "user_id": member.id,
