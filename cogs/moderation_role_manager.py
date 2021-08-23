@@ -28,7 +28,7 @@ def moderator_role_check():
 	return commands.check(predicate)
 
 
-class Moderator(commands.Cog):
+class ModerationRoleManager(commands.Cog, name="Moderation roles"):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -54,4 +54,4 @@ class Moderator(commands.Cog):
 
 # do stuff here
 def setup(bot):
-	bot.add_cog(Moderator(bot))
+	bot.add_cog(ModerationRoleManager(bot))
