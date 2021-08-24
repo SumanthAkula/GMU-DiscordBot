@@ -224,7 +224,7 @@ class Punisher(commands.Cog):
             }
         )
 
-        await member.send(f"Your temporary mute from the {guild.name} Discord server is over! You are free speak in the"
+        await member.send(f"You have been unmuted {guild.name} Discord server is over! You are free speak in the"
                           f" server again.")
 
 
