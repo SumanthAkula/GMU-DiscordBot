@@ -7,3 +7,4 @@ tmp/deleted_attachments/*
 .devcontainer
 venv_linux/
 venv_win/
+.DS_Store
