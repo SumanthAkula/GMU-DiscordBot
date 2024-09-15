@@ -8,3 +8,4 @@ tmp/deleted_attachments/*
 venv_linux/
 venv_win/
 .DS_Store
+secret.py
